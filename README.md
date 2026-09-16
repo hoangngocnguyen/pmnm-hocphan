@@ -14,3 +14,8 @@ Từ năm nhất đại học, tôi đã được nghe nhiều về "mã nguồn
 3. **Git** - Giấy phép: GNU General Public License v2.0.
 4. **Visual Studio Code** - Giấy phép: MIT License.
 5. **Docker Engine** - Giấy phép: Apache License 2.0.
+
+## Giấy phép
+Mã nguồn trong kho này được phát hành
+theo [Giấy phép MIT](LICENSE).
+SPDX-License-Identifier: MIT
