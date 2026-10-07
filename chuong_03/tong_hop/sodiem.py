@@ -34,7 +34,7 @@ STUDENTS = {
 }
 
 
-# --- Các hàm phụ ---
+# Các hàm phụ
 def average(scores):
     if not scores:
         return None
@@ -93,7 +93,7 @@ def layout(title, body):
 </html>"""
 
 
-# --- PHẦN 1: GIAO DIỆN WEB ---
+# PHẦN 1: GIAO DIỆN WEB
 
 
 # Câu 1: Trang chủ
@@ -290,7 +290,7 @@ def search_student():
     return layout("Tìm kiếm sinh viên", body)
 
 
-# --- PHẦN 2: API JSON ---
+# PHẦN 2: API JSON
 
 
 # Câu 7.1. Lấy danh sách sinh viên có tham số
@@ -338,6 +338,83 @@ def api_get_student_detail(mssv):
         abort(404, description=f"Không tìm thấy sinh viên có MSSV = {mssv}.")
 
     return jsonify(summary)
+
+
+# Câu 8: Quản lý điểm một học phần
+@app.route("/api/students/<mssv>/scores/<course>", methods=["GET", "PUT", "DELETE"])
+def api_manage_score(mssv: str, course: str):
+    student = STUDENTS.get(mssv)
+    if not student:
+        abort(404, description=f"Không tìm thấy sinh viên có MSSV = {mssv}.")
+
+    # Tên học phần luôn chuyển thành chữ hoa
+    course_upper = course.upper()
+
+    # Xem điểm
+    if request.method == "GET":
+        if course_upper not in student["scores"]:
+            abort(404, description=f"Sinh viên chưa có điểm học phần {course_upper}.")
+        return jsonify(
+            {
+                "mssv": mssv,
+                "course": course_upper,
+                "score": student["scores"][course_upper],
+            }
+        )
+
+    # Thêm hoặc Sửa điểm
+    elif request.method == "PUT":
+        score_raw = request.args.get("score")
+
+        # Lỗi 400 nếu thiếu tham số score
+        if score_raw is None:
+            abort(400, description="Thiếu tham số 'score'.")
+
+        # Lỗi 400 nếu score sai kiểu
+        try:
+            score_val = float(score_raw)
+        except ValueError:
+            abort(400, description="Tham số 'score' phải là một số.")
+
+        # Lỗi 400 nếu score ngoài [0, 10]
+        if not (0 <= score_val <= 10):
+            abort(400, description="Điểm phải nằm trong khoảng từ 0 đến 10.")
+
+        # Kiểm tra xem đây là thao tác THÊM MỚI (201) hay CẬP NHẬT (200)
+        is_new = course_upper not in student["scores"]
+        student["scores"][course_upper] = score_val
+        avg = average(student["scores"])
+
+        res_data = {
+            "mssv": mssv,
+            "course": course_upper,
+            "score": score_val,
+            "average": avg,
+        }
+
+        if is_new:
+            # Thêm mới: trả 201 + header Location
+            response = jsonify(res_data)
+            response.status_code = 201
+            response.headers["Location"] = url_for(
+                "api_manage_score", mssv=mssv, course=course_upper
+            )
+            return response
+        else:
+            # Sửa điểm: trả 200
+            return jsonify(res_data), 200
+
+    # Xóa điểm
+    elif request.method == "DELETE":
+        if course_upper not in student["scores"]:
+            abort(404, description=f"Sinh viên chưa có điểm học phần {course_upper}.")
+
+        del student["scores"][course_upper]
+        return make_response("", 204)
+
+    # Branch phòng ngừa lỗi Pylance và xử lý các method khác
+    else:
+        abort(405, description="Phương thức không được hỗ trợ.")
 
 
 if __name__ == "__main__":
