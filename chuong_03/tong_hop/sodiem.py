@@ -1,4 +1,4 @@
-from flask import Flask, url_for
+from flask import Flask, abort, jsonify, make_response, redirect, request, url_for
 from markupsafe import escape
 
 app = Flask(__name__)
@@ -18,7 +18,7 @@ STUDENTS = {
     "23T1020003": {
         "name": "Lê Hoàng Cường",
         "lop": "K47B",
-        "scores": {"PMMNM": 9.5, "CSDL": 9.0, "MMT": 7.0},
+        "scores": {"PMMNM": 9.5, "CSDL": 9.0},
     },
     "23T1020004": {
         "name": "Phạm Minh Dũng",
@@ -34,6 +34,7 @@ STUDENTS = {
 }
 
 
+# --- Các hàm phụ ---
 def average(scores):
     if not scores:
         return None
@@ -92,100 +93,10 @@ def layout(title, body):
 </html>"""
 
 
-from flask import Flask, abort, make_response, redirect, request
-
-app = Flask(__name__)
-app.config["JSON_AS_ASCII"] = False
-
-STUDENTS = {
-    "23T1020001": {
-        "name": "Nguyễn Văn An",
-        "lop": "K47A",
-        "scores": {"PMMNM": 8.5, "CSDL": 7.0, "MMT": 9.0},
-    },
-    "23T1020002": {
-        "name": "Trần Thị Bình",
-        "lop": "K47A",
-        "scores": {"PMMNM": 6.0, "CSDL": 5.5, "MMT": 9.0},
-    },
-    "23T1020003": {
-        "name": "Lê Hoàng Cường",
-        "lop": "K47B",
-        "scores": {"PMMNM": 9.5, "CSDL": 9.0, "MMT": 7.0},
-    },
-    "23T1020004": {
-        "name": "Phạm Minh Dũng",
-        "lop": "K47B",
-        "scores": {"PMMNM": 4.0, "CSDL": 3.5, "MMT": 5.0},
-    },
-    "23T1020005": {"name": "Hoàng Thu Hà", "lop": "K47A", "scores": {}},
-    "23T1020006": {
-        "name": "Võ Quốc Khánh",
-        "lop": "K47C",
-        "scores": {"PMMNM": 7.5, "MMT": 8.0},
-    },
-}
+# --- PHẦN 1: GIAO DIỆN WEB ---
 
 
-def average(scores):
-    if not scores:
-        return None
-    return round(sum(scores.values()) / len(scores), 2)
-
-
-def rank(avg):
-    if avg is None:
-        return "Chưa có điểm"
-    if avg >= 8.5:
-        return "Giỏi"
-    if avg >= 7.0:
-        return "Khá"
-    if avg >= 5.0:
-        return "Trung bình"
-    return "Yếu"
-
-
-def student_summary(mssv):
-    student = STUDENTS.get(mssv)
-    if not student:
-        return None
-    avg = average(student["scores"])
-    return {
-        "mssv": mssv,
-        "name": student["name"],
-        "lop": student["lop"],
-        "scores": student["scores"],
-        "average": avg,
-        "rank": rank(avg),
-    }
-
-
-def layout(title, body):
-    safe_title = escape(title)
-    nav_home = url_for("home")
-    nav_students = url_for("student_list")
-    nav_search = url_for("search_student")
-
-    return f"""<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <title>{safe_title} - Sổ điểm</title>
-</head>
-<body>
-    <nav>
-        <a href="{nav_home}">Trang chủ</a> | 
-        <a href="{nav_students}">Sinh viên</a> | 
-        <a href="{nav_search}">Tìm kiếm</a>
-    </nav>
-    <hr>
-    <h1>{safe_title}</h1>
-    <div>{body}</div>
-</body>
-</html>"""
-
-
-# Câu 1:
+# Câu 1: Trang chủ
 @app.route("/")
 def home():
     total_students = len(STUDENTS)
@@ -206,7 +117,7 @@ def home():
     return layout("Trang chủ", body)
 
 
-# Câu 2:
+# Câu 2: Danh sách sinh viên (Có lọc theo lớp)
 @app.route("/students")
 def student_list():
     lop_filter = request.args.get("lop", "").strip()
@@ -220,7 +131,7 @@ def student_list():
     filtered_students = []
     for mssv in STUDENTS:
         summary = student_summary(mssv)
-        if summary:
+        if summary is not None:
             if lop_filter:
                 if summary["lop"].lower() == lop_filter.lower():
                     filtered_students.append(summary)
@@ -269,11 +180,11 @@ def student_list():
     return layout("Danh sách sinh viên", body)
 
 
-# Câu 3:
+# Câu 3: Chi tiết sinh viên
 @app.route("/students/<mssv>")
 def student_detail(mssv):
     summary = student_summary(mssv)
-    if not summary:
+    if summary is None:
         abort(404, description=f"Không có sinh viên với MSSV = {mssv}.")
 
     class_url = url_for("student_list", lop=summary["lop"])
@@ -312,17 +223,17 @@ def student_detail(mssv):
     return layout(f"Chi tiết: {summary['name']}", body)
 
 
-# Câu 4:
+# Câu 4: Link rút gọn 301
 @app.route("/sv/<mssv>")
 def short_student_detail(mssv):
     return redirect(url_for("student_detail", mssv=mssv), code=301)
 
 
-# Câu 5:
+# Câu 5: Xuất CSV
 @app.route("/students/<mssv>/export")
 def export_csv(mssv):
     summary = student_summary(mssv)
-    if not summary:
+    if summary is None:
         abort(404, description=f"Không có sinh viên với MSSV = {mssv}.")
 
     csv_lines = ["hoc_phan,diem"]
@@ -336,7 +247,7 @@ def export_csv(mssv):
     return response
 
 
-# Câu 6:
+# Câu 6: Tìm kiếm an toàn (chống XSS)
 @app.route("/search")
 def search_student():
     query = request.args.get("q", "").strip()
@@ -346,7 +257,9 @@ def search_student():
         q_lower = query.lower()
         for mssv, data in STUDENTS.items():
             if q_lower in mssv.lower() or q_lower in data["name"].lower():
-                results.append(student_summary(mssv))
+                s = student_summary(mssv)
+                if s is not None:
+                    results.append(s)
 
     if not query:
         search_result_html = ""
@@ -375,3 +288,57 @@ def search_student():
     {search_result_html}
     """
     return layout("Tìm kiếm sinh viên", body)
+
+
+# --- PHẦN 2: API JSON ---
+
+
+# Câu 7.1. Lấy danh sách sinh viên có tham số
+@app.route("/api/students", methods=["GET"])
+def api_get_students():
+    lop_param = request.args.get("lop", "").strip()
+    min_avg_raw = request.args.get("min_avg")
+
+    min_avg = None
+    if min_avg_raw is not None:
+        try:
+            min_avg = float(min_avg_raw)
+        except ValueError:
+            abort(400, description="Tham số min_avg phải là một số hợp lệ.")
+
+    results = []
+    for mssv in STUDENTS:
+        summary = student_summary(mssv)
+        if summary is None:
+            continue
+
+        # Lọc theo lớp (không phân biệt hoa thường)
+        if lop_param and summary["lop"].lower() != lop_param.lower():
+            continue
+
+        # Lọc theo điểm trung bình (bỏ qua sinh viên chưa có điểm)
+        if (
+            summary is not None
+            and (not lop_param or summary["lop"].lower() == lop_param.lower())
+            and (
+                min_avg is None
+                or (summary["average"] is not None and summary["average"] >= min_avg)
+            )
+        ):
+            results.append(summary)
+
+    return jsonify(results)
+
+
+# Câu 7.2: Lấy chi tiết thông tin một sinh viên theo MSSV
+@app.route("/api/students/<mssv>", methods=["GET"])
+def api_get_student_detail(mssv):
+    summary = student_summary(mssv)
+    if summary is None:
+        abort(404, description=f"Không tìm thấy sinh viên có MSSV = {mssv}.")
+
+    return jsonify(summary)
+
+
+if __name__ == "__main__":
+    app.run(debug=True, port=8000)
