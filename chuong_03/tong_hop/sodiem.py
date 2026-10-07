@@ -417,5 +417,35 @@ def api_manage_score(mssv: str, course: str):
         abort(405, description="Phương thức không được hỗ trợ.")
 
 
+# Câu 9: Trang lỗi thống nhất cho 400, 404, 405
+ERR_TITLES = {
+    400: "Dữ liệu không hợp lệ",
+    404: "Không tìm thấy",
+    405: "Phương thức không được hỗ trợ",
+}
+
+
+@app.errorhandler(400)
+@app.errorhandler(404)
+@app.errorhandler(405)
+def handle_error(error):
+    # Lấy mã HTTP status code (mặc định 500 nếu không xác định)
+    code = getattr(error, "code", 500)
+
+    # Lấy tiêu đề lỗi tương ứng từ bảng ERR_TITLES
+    title = ERR_TITLES.get(code, "Lỗi ứng dụng")
+
+    # Lấy mô tả chi tiết từ error.description
+    description = getattr(error, "description", "Đã xảy ra lỗi.")
+
+    # Phản hồi định dạng JSON cho các route API bắt đầu bằng /api/
+    if request.path.startswith("/api/"):
+        return jsonify({"error": title, "detail": description}), code
+
+    # Phản hồi giao diện HTML cho các trang Web còn lại
+    body = f"<h2>{code} - {escape(title)}</h2><p>{escape(description)}</p>"
+    return layout(f"Lỗi {code}", body), code
+
+
 if __name__ == "__main__":
     app.run(debug=True, port=8000)
