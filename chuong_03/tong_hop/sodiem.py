@@ -318,15 +318,12 @@ def api_get_students():
             continue
 
         # Lọc theo điểm trung bình (bỏ qua sinh viên chưa có điểm)
-        if (
-            summary is not None
-            and (not lop_param or summary["lop"].lower() == lop_param.lower())
-            and (
-                min_avg is None
-                or (summary["average"] is not None and summary["average"] >= min_avg)
-            )
-        ):
-            results.append(summary)
+        if min_avg is not None:
+            avg = summary.get("average")
+            if avg is None or avg < min_avg:
+                continue
+
+        results.append(summary)
 
     return jsonify(results)
 
