@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_macro.html" import item_card, pagination %}
 
 {% block title %}Thực đơn · Cà phê Sông Hương{% endblock %}
 
@@ -16,17 +17,10 @@
   {% if menu %}
     <section class="list-group shadow-sm" aria-label="Danh sách món">
       {% for item in menu %}
-        <article class="list-group-item d-flex justify-content-between align-items-center gap-3">
-          <div class="py-1">
-            <strong>{{ item.name|title }}</strong>
-            <div class="small {% if item.available %}text-success{% else %}text-secondary{% endif %}">
-              {% if item.available %}Đang phục vụ{% else %}Tạm hết{% endif %}
-            </div>
-          </div>
-          <span class="badge rounded-pill text-bg-warning">{{ item.price|vnd }}</span>
-        </article>
+        {{ item_card(item) }}
       {% endfor %}
     </section>
+    {{ pagination(page, pages, 'show_menu') }}
   {% else %}
     <div class="alert alert-info">Thực đơn đang được cập nhật. Bạn quay lại sau nhé!</div>
   {% endif %}

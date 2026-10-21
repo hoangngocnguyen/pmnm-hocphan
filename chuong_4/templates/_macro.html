@@ -1,0 +1,31 @@
+{% macro item_card(item) %}
+  <article class="list-group-item d-flex justify-content-between align-items-center gap-3">
+    <div class="py-1">
+      <strong>{{ item.name|title }}</strong>
+      <div class="small {% if item.available %}text-success{% else %}text-secondary{% endif %}">
+        {% if item.available %}Đang phục vụ{% else %}Tạm hết{% endif %}
+      </div>
+    </div>
+    <span class="badge rounded-pill text-bg-warning">{{ item.price|vnd }}</span>
+  </article>
+{% endmacro %}
+
+{% macro pagination(page, pages, endpoint) %}
+  {% if pages > 1 %}
+    <nav class="mt-4" aria-label="Phân trang thực đơn">
+      <ul class="pagination justify-content-center">
+        <li class="page-item {% if page == 1 %}disabled{% endif %}">
+          <a class="page-link" href="{{ url_for(endpoint, page=page-1) if page > 1 else '#' }}" aria-label="Trang trước">Trước</a>
+        </li>
+        {% for number in range(1, pages + 1) %}
+          <li class="page-item {% if number == page %}active{% endif %}">
+            <a class="page-link" href="{{ url_for(endpoint, page=number) }}">{{ number }}</a>
+          </li>
+        {% endfor %}
+        <li class="page-item {% if page == pages %}disabled{% endif %}">
+          <a class="page-link" href="{{ url_for(endpoint, page=page+1) if page < pages else '#' }}" aria-label="Trang sau">Sau</a>
+        </li>
+      </ul>
+    </nav>
+  {% endif %}
+{% endmacro %}

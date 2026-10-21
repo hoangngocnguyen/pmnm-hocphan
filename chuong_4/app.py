@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, abort, render_template, request
 
 app = Flask(__name__)
 
@@ -59,6 +59,17 @@ def home():
 
 @app.route("/menu")
 def show_menu():
+    page_value = request.args.get("page", "1")
+    try:
+        page = int(page_value)
+    except ValueError:
+        abort(404)
+
+    per_page = 3
+    pages = (len(MENU) + per_page - 1) // per_page
+    if page < 1 or page > pages:
+        abort(404)
+
     # Tính toán thông số thống kê
     total_items = len(MENU)
     available_count = sum(1 for item in MENU if item["available"])
@@ -68,7 +79,9 @@ def show_menu():
 
     return render_template(
         "menu.html",
-        menu=MENU,
+        menu=MENU[(page - 1) * per_page : page * per_page],
+        page=page,
+        pages=pages,
         total_items=total_items,
         available_count=available_count,
         avg_price=avg_price,
