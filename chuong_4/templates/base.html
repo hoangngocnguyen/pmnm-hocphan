@@ -9,7 +9,8 @@
       rel="stylesheet"
     />
     <style>
-      body { background: #f8f5f0; }
+      body { min-height: 100vh; display: flex; flex-direction: column; background: #f8f5f0; }
+      main { flex: 1; width: 100%; }
       {% block styles %}{% endblock %}
     </style>
   </head>
