@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f6f0e7" />
+    <title>{{ shop.name }} · Cà phê & chuyện trò</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #28251f;
+        --muted: #756f65;
+        --coffee: #6b3f28;
+        --coffee-dark: #472918;
+        --cream: #f6f0e7;
+        --paper: #fffdf9;
+        --line: #eee5d9;
+      }
+      * { box-sizing: border-box; }
+      body {
+        min-height: 100vh;
+        margin: 0;
+        color: var(--ink);
+        background:
+          radial-gradient(ellipse at 8% 8%, rgba(218, 190, 153, .23), transparent 30rem),
+          var(--cream);
+        font-family: "DM Sans", sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      a { color: inherit; }
+      .page { width: min(1120px, calc(100% - 48px)); margin: 0 auto; }
+      .nav { height: 86px; display: flex; align-items: center; justify-content: space-between; }
+      .brand { display: inline-flex; align-items: center; gap: 11px; text-decoration: none; font-weight: 700; letter-spacing: -.03em; }
+      .brand-mark { display: grid; width: 40px; height: 40px; place-items: center; border-radius: 14px; color: #fff7eb; background: var(--coffee); font-size: 19px; }
+      .nav-note { color: var(--muted); font-size: 13px; }
+      .hero {
+        position: relative;
+        display: grid;
+        grid-template-columns: 1.08fr .92fr;
+        min-height: 440px;
+        overflow: hidden;
+        border-radius: 28px;
+        background: var(--coffee-dark);
+        box-shadow: 0 22px 55px rgba(63, 42, 25, .14);
+      }
+      .hero-copy { position: relative; z-index: 1; align-self: center; padding: 56px 20px 56px 64px; color: #fffaf2; }
+      .eyebrow { display: inline-flex; align-items: center; gap: 9px; margin-bottom: 23px; color: #e9c99d; font-size: 11px; font-weight: 700; letter-spacing: .17em; text-transform: uppercase; }
+      .eyebrow::before { width: 24px; height: 1px; background: currentColor; content: ""; }
+      h1, h2, p { margin-top: 0; }
+      h1 { max-width: 540px; margin-bottom: 18px; font-family: "Playfair Display", Georgia, serif; font-size: clamp(42px, 5.3vw, 68px); font-weight: 700; letter-spacing: -.045em; line-height: 1.04; }
+      h1 span { color: #e8c394; }
+      .hero-description { max-width: 420px; margin-bottom: 30px; color: rgba(255, 250, 242, .74); font-size: 15px; line-height: 1.8; }
+      .actions { display: flex; align-items: center; flex-wrap: wrap; gap: 13px; }
+      .button { display: inline-flex; min-height: 49px; align-items: center; justify-content: center; gap: 10px; padding: 0 20px; border: 1px solid transparent; border-radius: 999px; font-size: 13px; font-weight: 700; text-decoration: none; transition: transform .2s ease, background .2s ease; }
+      .button:hover { transform: translateY(-2px); }
+      .button-primary { color: var(--coffee-dark); background: #f2d5ad; }
+      .button-primary:hover { color: var(--coffee-dark); background: #ffe3bd; }
+      .button-quiet { color: #fffaf2; border-color: rgba(255, 250, 242, .24); }
+      .button-quiet:hover { color: #fffaf2; background: rgba(255, 250, 242, .1); }
+      .hero-art { position: relative; display: grid; min-height: 100%; place-items: center; overflow: hidden; background: radial-gradient(ellipse at 54% 48%, #a8754b 0, #795035 37%, #472918 75%); }
+      .hero-art::before, .hero-art::after { position: absolute; border: 1px solid rgba(255, 238, 208, .13); border-radius: 50%; content: ""; }
+      .hero-art::before { width: 390px; height: 390px; }
+      .hero-art::after { width: 300px; height: 300px; }
+      .coffee-cup { position: relative; z-index: 1; display: grid; width: 214px; height: 214px; place-items: center; border: 13px solid #f5ead8; border-radius: 50%; color: #f8eee0; background: linear-gradient(145deg, #9a6745, #603a27); box-shadow: 0 22px 50px rgba(30, 16, 8, .35), inset 0 0 0 1px rgba(255,255,255,.25); transform: rotate(-9deg); }
+      .coffee-cup i { font-size: 84px; }
+      .steam { position: absolute; top: 62px; left: 50%; color: rgba(255, 239, 214, .8); font-size: 42px; transform: translateX(-50%); }
+      .art-caption { position: absolute; right: 30px; bottom: 25px; color: rgba(255, 250, 242, .69); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
+      .details { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 22px 0 50px; }
+      .detail-card { display: flex; min-height: 105px; align-items: center; gap: 16px; padding: 22px 24px; border: 1px solid rgba(107, 63, 40, .08); border-radius: 20px; background: rgba(255, 253, 249, .85); }
+      .detail-icon { display: grid; width: 46px; height: 46px; flex: 0 0 auto; place-items: center; border-radius: 15px; color: var(--coffee); background: #f3e9da; font-size: 19px; }
+      .detail-label { margin-bottom: 5px; color: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+      .detail-value { margin: 0; font-size: 14px; font-weight: 700; }
+      .status { display: inline-flex; align-items: center; gap: 8px; margin-top: 9px; font-size: 12px; font-weight: 700; }
+      .status::before { width: 7px; height: 7px; border-radius: 50%; background: currentColor; content: ""; }
+      .status.open { color: #347653; }
+      .status.closed { color: #a34b3f; }
+      .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 18px; }
+      .section-kicker { margin-bottom: 7px; color: #9a7653; font-size: 10px; font-weight: 700; letter-spacing: .17em; text-transform: uppercase; }
+      h2 { margin-bottom: 0; font-family: "Playfair Display", Georgia, serif; font-size: 30px; letter-spacing: -.025em; }
+      .promo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 54px; }
+      .promo { display: flex; align-items: flex-start; gap: 15px; padding: 23px; border: 1px solid var(--line); border-radius: 18px; background: var(--paper); }
+      .promo-icon { display: grid; width: 42px; height: 42px; flex: 0 0 auto; place-items: center; border-radius: 14px; color: #986632; background: #f7eddc; font-size: 17px; }
+      .promo p { margin: 2px 0 0; font-size: 14px; font-weight: 600; line-height: 1.6; }
+      .empty { grid-column: 1 / -1; color: var(--muted); }
+      footer { padding: 20px 0 28px; border-top: 1px solid rgba(107, 63, 40, .12); color: var(--muted); font-size: 12px; text-align: center; }
+      @media (max-width: 760px) {
+        .page { width: min(100% - 30px, 560px); }
+        .nav { height: 70px; }
+        .nav-note { display: none; }
+        .hero { grid-template-columns: 1fr; }
+        .hero-copy { padding: 43px 28px 32px; }
+        .hero-art { min-height: 250px; }
+        .coffee-cup { width: 150px; height: 150px; border-width: 9px; }
+        .coffee-cup i { font-size: 59px; }
+        .steam { top: 22px; }
+        .hero-art::before { width: 270px; height: 270px; }
+        .hero-art::after { width: 210px; height: 210px; }
+        .details { grid-template-columns: 1fr; gap: 11px; margin-bottom: 40px; }
+        .detail-card { min-height: 88px; padding: 17px 19px; }
+        .promo-grid { grid-template-columns: 1fr; gap: 11px; }
+        .section-heading { align-items: start; flex-direction: column; }
+      }
+      @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; } }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <nav class="nav" aria-label="Điều hướng chính">
+        <a class="brand" href="/" aria-label="{{ shop.name }} - Trang chủ">
+          <span class="brand-mark"><i class="bi bi-cup-hot-fill"></i></span>
+          <span>{{ shop.name }}</span>
+        </a>
+        <span class="nav-note">Một góc nhỏ để chậm lại giữa lòng Huế</span>
+      </nav>
+
+      <section class="hero" aria-labelledby="welcome-title">
+        <div class="hero-copy">
+          <div class="eyebrow">Cà phê & chuyện trò</div>
+          <h1 id="welcome-title">Một tách ngon,<br /><span>một ngày dịu hơn.</span></h1>
+          <p class="hero-description">Ghé {{ shop.name }} để thưởng thức hương vị thân quen, tìm một góc bình yên và dành thời gian cho điều bạn yêu thích.</p>
+          <div class="actions">
+            <a href="/menu" class="button button-primary">Khám phá thực đơn <i class="bi bi-arrow-right"></i></a>
+            <a href="#thong-tin" class="button button-quiet">Tìm hiểu quán</a>
+          </div>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <i class="bi bi-wind steam"></i>
+          <div class="coffee-cup"><i class="bi bi-cup-hot-fill"></i></div>
+          <span class="art-caption">Pha bằng sự tử tế</span>
+        </div>
+      </section>
+
+      <section class="details" id="thong-tin" aria-label="Thông tin quán">
+        <article class="detail-card">
+          <span class="detail-icon"><i class="bi bi-geo-alt-fill"></i></span>
+          <div><div class="detail-label">Ghé thăm chúng mình</div><p class="detail-value">{{ shop.address }}</p></div>
+        </article>
+        <article class="detail-card">
+          <span class="detail-icon"><i class="bi bi-clock-fill"></i></span>
+          <div>
+            <div class="detail-label">Giờ phục vụ</div>
+            <p class="detail-value">{{ shop.open }}:00 – {{ shop.close }}:00 mỗi ngày</p>
+            {% if gio is not none and trang_thai_mo_cua is not none %}
+            <span class="status {% if trang_thai_mo_cua %}open{% else %}closed{% endif %}">
+              {% if trang_thai_mo_cua %}Đang mở cửa · {{ gio }}:00{% else %}Đã đóng cửa · {{ gio }}:00{% endif %}
+            </span>
+            {% endif %}
+          </div>
+        </article>
+      </section>
+
+      <section aria-labelledby="promotions-title">
+        <div class="section-heading">
+          <div><div class="section-kicker">Ưu đãi dành cho bạn</div><h2 id="promotions-title">Có gì vui hôm nay?</h2></div>
+          <a href="/menu" class="button button-primary">Chọn món yêu thích <i class="bi bi-arrow-right"></i></a>
+        </div>
+        <div class="promo-grid">
+          {% for promo in promotions %}
+          <article class="promo"><span class="promo-icon"><i class="bi bi-stars"></i></span><p>{{ promo }}</p></article>
+          {% else %}
+          <article class="promo empty"><span class="promo-icon"><i class="bi bi-info-circle"></i></span><p>Quán đang chuẩn bị những ưu đãi mới. Hẹn bạn lần tới nhé!</p></article>
+          {% endfor %}
+        </div>
+      </section>
+
+      <footer>Rất vui được đón bạn tại {{ shop.name }} · Huế</footer>
+    </main>
+  </body>
+</html>
