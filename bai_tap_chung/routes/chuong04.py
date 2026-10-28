@@ -1,7 +1,6 @@
 from flask import Blueprint, abort, render_template, request
 
 chuong04_bp = Blueprint("chuong04", __name__)
-chuong4_bp = chuong04_bp  # Alias for backward compatibility
 
 SHOP = {
     "name": "Cà phê Sông Hương",

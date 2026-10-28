@@ -5,6 +5,4 @@ from .calc import calc_bp
 from .diemhocphan import diemhocphan_bp
 from .router import chuong05_bp
 
-chuong5_bp = chuong05_bp  # Alias for backward compatibility
-
-__all__ = ["chuong05_bp", "chuong5_bp", "calc_bp", "diemhocphan_bp", "bmi_bp"]
+__all__ = ["bmi_bp", "calc_bp", "chuong05_bp", "diemhocphan_bp"]

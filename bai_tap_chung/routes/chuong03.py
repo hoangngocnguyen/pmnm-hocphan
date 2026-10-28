@@ -1,4 +1,13 @@
-from flask import Blueprint, abort, jsonify, make_response, redirect, render_template, request, url_for
+from flask import (
+    Blueprint,
+    abort,
+    jsonify,
+    make_response,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
 from markupsafe import escape
 
 chuong03_bp = Blueprint("chuong03", __name__)
@@ -103,7 +112,9 @@ def student_list():
 
     nav_links = [f'<a href="{url_for("chuong03.student_list")}">Tất cả</a>']
     for c in all_classes:
-        nav_links.append(f'<a href="{url_for("chuong03.student_list", lop=c)}">{escape(c)}</a>')
+        nav_links.append(
+            f'<a href="{url_for("chuong03.student_list", lop=c)}">{escape(c)}</a>'
+        )
     filter_bar = " | ".join(nav_links)
 
     filtered_students = []
@@ -316,7 +327,9 @@ def api_get_student_detail(mssv):
 
 
 # Câu 8: Quản lý điểm một học phần
-@chuong03_bp.route("/api/students/<mssv>/scores/<course>", methods=["GET", "PUT", "DELETE"])
+@chuong03_bp.route(
+    "/api/students/<mssv>/scores/<course>", methods=["GET", "PUT", "DELETE"]
+)
 def api_manage_score(mssv: str, course: str):
     student = STUDENTS.get(mssv)
     if not student:
@@ -420,5 +433,3 @@ def handle_error(error):
     # Phản hồi giao diện HTML cho các trang Web còn lại
     body = f"<h2>{code} - {escape(title)}</h2><p>{escape(description)}</p>"
     return layout(f"Lỗi {code}", body), code
-
-
