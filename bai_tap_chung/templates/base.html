@@ -9,14 +9,37 @@
   </head>
   <body class="min-h-screen bg-slate-50 text-slate-800 antialiased">
     <header class="border-b border-slate-200 bg-white">
-      <div class="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
-        <a href="{{ url_for('home') }}" class="text-lg font-bold tracking-tight text-indigo-700">Bài tập học phần</a>
-        <nav class="flex flex-wrap gap-x-5 gap-y-2 text-sm font-medium text-slate-600" aria-label="Menu dự án">
-          <a class="hover:text-indigo-700" href="{{ url_for('chuong03.home') }}">Chương 03</a>
-          <a class="hover:text-indigo-700" href="{{ url_for('chuong04.home') }}">Chương 04</a>
-          <a class="hover:text-indigo-700" href="{{ url_for('chuong05.home') }}">Chương 05</a>
-          <a class="hover:text-indigo-700" href="{{ url_for('libraryms.home') }}">LibraryMS</a>
-          <a class="hover:text-indigo-700" href="{{ url_for('assignment_home') }}">Bài tập</a>
+      <div
+        class="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
+      >
+        <a
+          href="{{ url_for('home') }}"
+          class="text-lg font-bold tracking-tight text-indigo-700"
+          >Bài tập học phần</a
+        >
+        <nav
+          class="flex flex-wrap gap-x-5 gap-y-2 text-sm font-medium text-slate-600"
+          aria-label="Menu dự án"
+        >
+          <a class="hover:text-indigo-700" href="{{ url_for('chuong03.home') }}"
+            >Chương 03</a
+          >
+          <a class="hover:text-indigo-700" href="{{ url_for('chuong04.home') }}"
+            >Chương 04</a
+          >
+          <a class="hover:text-indigo-700" href="{{ url_for('chuong05.home') }}"
+            >Chương 05</a
+          >
+          <a
+            class="hover:text-indigo-700"
+            href="{{ url_for('libraryms.home') }}"
+            >LibraryMS</a
+          >
+          <a
+            class="hover:text-indigo-700"
+            href="{{ url_for('assignment_home') }}"
+            >Bài tập</a
+          >
         </nav>
       </div>
     </header>
@@ -24,7 +47,9 @@
       {% block content %}{% endblock %}
     </main>
     <footer class="border-t border-slate-200 bg-white">
-      <div class="mx-auto max-w-6xl px-4 py-5 text-xs text-slate-500">Tổng hợp bài tập Flask · Tailwind CSS</div>
+      <div class="mx-auto max-w-6xl px-4 py-5 text-xs text-slate-500">
+        Tổng hợp bài tập mã nguồn mở - 23T1080015 - Nguyễn Ngọc Huy Hoàng
+      </div>
     </footer>
   </body>
 </html>
