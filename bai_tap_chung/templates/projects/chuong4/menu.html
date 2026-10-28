@@ -1,0 +1,18 @@
+{% extends "projects/chuong4/base.html" %}
+{% from "macros/ui.html" import item_card, pagination, stat_card %}
+{% block title %}Thực đơn · Cà phê Sông Hương{% endblock %}
+{% block content %}
+  <header class="mb-6">
+    <p class="text-sm font-semibold uppercase tracking-wider text-amber-800">Cà phê Sông Hương</p>
+    <h1 class="mt-1 text-3xl font-bold text-slate-950">Thực đơn</h1>
+    <p class="mt-2 text-slate-600">Chọn một món thân quen, nhâm nhi và để ngày trôi thật chậm.</p>
+  </header>
+  {% if menu %}
+    <section class="grid gap-3 sm:grid-cols-2" aria-label="Danh sách món">{% for item in menu %}{{ item_card(item) }}{% endfor %}</section>
+    {{ pagination(page, pages, 'chuong4.show_menu') }}
+  {% else %}<p class="rounded-xl bg-white p-5 text-slate-600">Thực đơn đang được cập nhật.</p>{% endif %}
+  <section class="mt-7 grid gap-4 sm:grid-cols-2" aria-label="Thống kê thực đơn">
+    {{ stat_card('Đang phục vụ', available_count|string ~ ' / ' ~ total_items|string ~ ' món') }}
+    {{ stat_card('Giá trung bình', avg_price|vnd) }}
+  </section>
+{% endblock %}

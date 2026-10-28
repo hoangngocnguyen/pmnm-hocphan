@@ -1,0 +1,41 @@
+{% macro project_card(title, description, href, label) %}
+  <a href="{{ href }}" class="group flex h-full flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-300 hover:shadow-md">
+    <span class="mb-4 inline-flex w-fit rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">{{ label }}</span>
+    <h2 class="text-lg font-bold text-slate-900 group-hover:text-indigo-700">{{ title }}</h2>
+    <p class="mt-2 flex-1 text-sm leading-6 text-slate-600">{{ description }}</p>
+    <span class="mt-5 text-sm font-semibold text-indigo-700">Mở dự án <span aria-hidden="true">→</span></span>
+  </a>
+{% endmacro %}
+
+{% macro stat_card(label, value, detail='') %}
+  <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <p class="text-sm font-medium text-slate-500">{{ label }}</p>
+    <p class="mt-2 text-3xl font-bold tracking-tight text-slate-900">{{ value }}</p>
+    {% if detail %}<p class="mt-1 text-xs text-slate-500">{{ detail }}</p>{% endif %}
+  </section>
+{% endmacro %}
+
+{% macro text_field(name, label, value, placeholder, error=None) %}
+  <div>
+    <label for="{{ name }}" class="mb-1 block text-sm font-medium text-slate-700">{{ label }}</label>
+    <input id="{{ name }}" name="{{ name }}" type="text" inputmode="decimal" value="{{ value }}" placeholder="{{ placeholder }}" {% if error %}aria-describedby="error-{{ name }}"{% endif %} class="w-full rounded-lg border {% if error %}border-red-500{% else %}border-slate-300{% endif %} bg-white px-3 py-2.5 text-slate-800 focus:border-indigo-500 focus:outline-none" />
+    {% if error %}<p id="error-{{ name }}" class="mt-1 text-sm text-red-600">{{ error }}</p>{% endif %}
+  </div>
+{% endmacro %}
+
+{% macro item_card(item) %}
+  <article class="flex items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+    <div><h3 class="font-semibold text-slate-900">{{ item.name|title }}</h3><p class="mt-1 text-sm {% if item.available %}text-emerald-700{% else %}text-slate-500{% endif %}">{% if item.available %}Đang phục vụ{% else %}Tạm hết{% endif %}</p></div>
+    <span class="whitespace-nowrap rounded-full bg-amber-50 px-3 py-1 text-sm font-semibold text-amber-800">{{ item.price|vnd }}</span>
+  </article>
+{% endmacro %}
+
+{% macro pagination(page, pages, endpoint) %}
+  {% if pages > 1 %}
+    <nav class="mt-5 flex items-center justify-center gap-2" aria-label="Phân trang">
+      {% if page > 1 %}<a class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm hover:border-indigo-400" href="{{ url_for(endpoint, page=page-1) }}">Trước</a>{% endif %}
+      <span class="px-3 py-2 text-sm text-slate-600">Trang {{ page }} / {{ pages }}</span>
+      {% if page < pages %}<a class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm hover:border-indigo-400" href="{{ url_for(endpoint, page=page+1) }}">Sau</a>{% endif %}
+    </nav>
+  {% endif %}
+{% endmacro %}

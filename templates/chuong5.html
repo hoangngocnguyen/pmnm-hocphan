@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tính điểm học phần</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="min-h-screen bg-slate-50 p-4 flex items-center justify-center">
+    <main class="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <h1 class="text-xl font-bold text-slate-800">Tính điểm học phần</h1>
+      <p class="mt-1 mb-6 text-sm text-slate-500">Chuyên cần 10% · Giữa kỳ 30% · Cuối kỳ 60%</p>
+
+      <form method="post" class="space-y-4">
+        {% for key, label in [('cc', 'Chuyên cần (10%)'), ('gk', 'Giữa kỳ (30%)'), ('ck', 'Cuối kỳ (60%)')] %}
+        <div>
+          <label for="{{ key }}" class="mb-1 block text-sm font-medium text-slate-700">{{ label }}</label>
+          <input
+            id="{{ key }}"
+            name="{{ key }}"
+            type="text"
+            inputmode="decimal"
+            value="{{ scores[key] }}"
+            placeholder="Nhập điểm từ 0 đến 10"
+            aria-describedby="error-{{ key }}"
+            class="w-full rounded-lg border {% if errors[key] %}border-red-500{% else %}border-slate-300{% endif %} bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none"
+          />
+          {% if errors[key] %}<p id="error-{{ key }}" class="mt-1 text-sm text-red-600">{{ errors[key] }}</p>{% endif %}
+        </div>
+        {% endfor %}
+
+        <button type="submit" class="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700">Tính điểm</button>
+      </form>
+
+      {% if grade is not none %}
+      <section class="mt-6 rounded-lg bg-slate-50 p-4" aria-live="polite">
+        <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-500">Kết quả</h2>
+        <p class="mt-2 text-lg font-semibold text-slate-800">Điểm học phần: {{ '%.1f'|format(total) }} · {{ grade }}{% if ghi_chu %} ({{ ghi_chu }}){% endif %}</p>
+      </section>
+      {% endif %}
+    </main>
+  </body>
+</html>

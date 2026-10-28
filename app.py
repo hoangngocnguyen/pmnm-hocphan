@@ -3,6 +3,7 @@ from flask import Flask, render_template
 from routes.baitapchuong3 import baitapchuong3_bp
 from routes.buoi3 import buoi3_bp
 from routes.buoi4 import buoi4_bp
+from routes.chuong5 import chuong5_bp
 
 app = Flask(__name__)
 app.json.ensure_ascii = False  # type: ignore
@@ -12,6 +13,7 @@ app.json.ensure_ascii = False  # type: ignore
 app.register_blueprint(buoi4_bp)
 app.register_blueprint(buoi3_bp)
 app.register_blueprint(baitapchuong3_bp)
+app.register_blueprint(chuong5_bp)
 
 
 @app.route("/")

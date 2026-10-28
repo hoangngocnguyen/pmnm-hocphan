@@ -1,0 +1,22 @@
+{% extends "projects/chuong4/base.html" %}
+{% from "macros/ui.html" import stat_card %}
+{% block title %}Trang chủ · {{ shop.name }}{% endblock %}
+{% block content %}
+  <section class="mb-8 rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-50 to-white p-7 sm:p-10">
+    <p class="text-sm font-semibold uppercase tracking-wider text-amber-800">Cà phê Sông Hương</p>
+    <h1 class="mt-2 text-3xl font-bold text-slate-950">Một góc nhỏ để thưởng thức cà phê</h1>
+    <p class="mt-3 max-w-2xl leading-7 text-slate-600">Ghé quán, chọn món thân quen và để ngày trôi thật chậm.</p>
+    <a class="mt-5 inline-flex rounded-lg bg-amber-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-amber-800" href="{{ url_for('chuong4.show_menu') }}">Xem thực đơn</a>
+  </section>
+  <div class="grid gap-4 md:grid-cols-2">
+    {{ stat_card('Địa chỉ', shop.address, 'Cà phê Sông Hương') }}
+    {{ stat_card('Giờ mở cửa', shop.open|string ~ ':00 – ' ~ shop.close|string ~ ':00', 'Mỗi ngày') }}
+  </div>
+  {% if gio is not none and trang_thai_mo_cua is not none %}
+  <p class="mt-4 rounded-xl px-4 py-3 text-sm font-medium {% if trang_thai_mo_cua %}bg-emerald-50 text-emerald-800{% else %}bg-slate-200 text-slate-700{% endif %}">{% if trang_thai_mo_cua %}Đang mở cửa{% else %}Đã đóng cửa{% endif %} · {{ gio }}:00</p>
+  {% endif %}
+  <section class="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <h2 class="font-semibold text-slate-900">Ưu đãi</h2>
+    <ul class="mt-3 space-y-2 text-sm text-slate-600">{% for promo in promotions %}<li class="rounded-lg bg-amber-50 px-3 py-2">{{ promo }}</li>{% else %}<li>Quán đang chuẩn bị ưu đãi mới.</li>{% endfor %}</ul>
+  </section>
+{% endblock %}

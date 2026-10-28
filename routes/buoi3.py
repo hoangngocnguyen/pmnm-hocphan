@@ -1,32 +1,47 @@
 from flask import Blueprint, render_template, request
 
-# Tạo Blueprint cho buổi 2
 buoi3_bp = Blueprint("buoi3", __name__)
 
 
 @buoi3_bp.route("/calc", methods=["GET", "POST"])
 def home():
-    result = None  # Mặc định chưa bấm nút thì kết quả là None
     a = ""
     b = ""
+    op = "+"
+    result = None
+    errors: dict[str, str | None] = {"a": None, "b": None, "op": None}
 
     if request.method == "POST":
-        try:
-            a = float(request.form.get("a", 0))
-            b = float(request.form.get("b", 0))
+        a = request.form.get("a", "").strip()
+        b = request.form.get("b", "").strip()
+        op = request.form.get("op", "")
 
-            tong = a + b
-            hieu = a - b
-            tich = a * b
+        values = {}
+        for name, raw in (("a", a), ("b", b)):
+            try:
+                # Chấp nhận dấu phẩy, dấu chấm
+                values[name] = float(raw.replace(",", "."))
+            except ValueError:
+                errors[name] = "Vui lòng nhập số hợp lệ."
 
-            if b == 0:
-                thuong = "Không thể chia với số 0"
+        if op not in ("+", "-", "*", "/"):
+            errors["op"] = "Phép toán không hợp lệ."
+
+        if not errors["a"] and not errors["b"] and not errors["op"]:
+            left, right = values["a"], values["b"]
+            if op == "/" and right == 0:
+                errors["b"] = "Không thể chia cho 0."
             else:
-                thuong = a / b
+                calculated = {
+                    "+": left + right,
+                    "-": left - right,
+                    "*": left * right,
+                    "/": left / right if right != 0 else None,
+                }[op]
 
-            result = {"tong": tong, "hieu": hieu, "tich": tich, "thuong": thuong}
-        except ValueError:
-            result = "Lỗi: Vui lòng nhập số hợp lệ!"
+                display = (
+                    str(int(calculated)) if calculated.is_integer() else str(calculated)
+                )
+                result = f"{a} {op} {b} = {display}"
 
-    # return "Xin chao"
-    return render_template("math.html", result=result, a=a, b=b)
+    return render_template("math.html", result=result, a=a, b=b, op=op, errors=errors)
