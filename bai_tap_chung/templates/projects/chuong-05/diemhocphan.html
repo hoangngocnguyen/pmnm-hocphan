@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% from "macros/ui.html" import text_field %}
-{% block title %}Bài 1 · Tính điểm học phần{% endblock %}
+{% block title %}Bài 2 · Tính điểm học phần{% endblock %}
 {% block content %}
   <div class="mx-auto max-w-xl">
-    <a class="text-sm font-medium text-indigo-700 hover:underline" href="{{ url_for('chuong5.home') }}">← Danh sách bài Chương 5</a>
+    <a class="text-sm font-medium text-indigo-700 hover:underline" href="{{ url_for('chuong05.home') }}">← Danh sách bài Chương 05</a>
     <section class="mt-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-      <header class="mb-6"><p class="text-sm font-semibold uppercase tracking-wider text-indigo-700">Chương 5 · Tính điểm</p><h1 class="mt-1 text-2xl font-bold text-slate-950">Tính điểm học phần</h1><p class="mt-1 text-sm text-slate-500">Chuyên cần 10% · Giữa kỳ 30% · Cuối kỳ 60%</p></header>
+      <header class="mb-6"><p class="text-sm font-semibold uppercase tracking-wider text-indigo-700">Chương 05 · Tính điểm</p><h1 class="mt-1 text-2xl font-bold text-slate-950">Bài 2 · Tính điểm học phần</h1><p class="mt-1 text-sm text-slate-500">Chuyên cần 10% · Giữa kỳ 30% · Cuối kỳ 60%</p></header>
       <form method="post" class="space-y-4">
         {% for key, label in [('cc', 'Chuyên cần (10%)'), ('gk', 'Giữa kỳ (30%)'), ('ck', 'Cuối kỳ (60%)')] %}
           {{ text_field(key, label, scores[key], 'Nhập điểm từ 0 đến 10', errors[key]) }}

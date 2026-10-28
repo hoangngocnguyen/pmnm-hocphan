@@ -1,4 +1,4 @@
-{% extends "projects/chuong4/base.html" %}
+{% extends "projects/chuong-04/base.html" %}
 {% from "macros/ui.html" import item_card, pagination, stat_card %}
 {% block title %}Thực đơn · Cà phê Sông Hương{% endblock %}
 {% block content %}
@@ -9,7 +9,7 @@
   </header>
   {% if menu %}
     <section class="grid gap-3 sm:grid-cols-2" aria-label="Danh sách món">{% for item in menu %}{{ item_card(item) }}{% endfor %}</section>
-    {{ pagination(page, pages, 'chuong4.show_menu') }}
+    {{ pagination(page, pages, 'chuong04.show_menu') }}
   {% else %}<p class="rounded-xl bg-white p-5 text-slate-600">Thực đơn đang được cập nhật.</p>{% endif %}
   <section class="mt-7 grid gap-4 sm:grid-cols-2" aria-label="Thống kê thực đơn">
     {{ stat_card('Đang phục vụ', available_count|string ~ ' / ' ~ total_items|string ~ ' món') }}

@@ -9,16 +9,16 @@
   </section>
   <section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" aria-label="Danh sách dự án">
     {{ project_card('Chương 03', 'Sổ điểm sinh viên, lọc lớp, tìm kiếm, xuất CSV và API.', url_for('chuong03.home'), 'Sổ điểm') }}
-    {{ project_card('Chương 4', 'Website quán cà phê với thông tin, thực đơn và phân trang.', url_for('chuong4.home'), 'Website') }}
-    {{ project_card('Chương 5', 'Các bài về form, kiểm tra dữ liệu và xử lý dữ liệu người dùng.', url_for('chuong5.home'), 'Form') }}
+    {{ project_card('Chương 04', 'Website quán cà phê với thông tin, thực đơn và phân trang.', url_for('chuong04.home'), 'Website') }}
+    {{ project_card('Chương 05', 'Các bài về form, kiểm tra dữ liệu và xử lý dữ liệu người dùng.', url_for('chuong05.home'), 'Form') }}
     {{ project_card('LibraryMS', 'Danh mục sách, lọc thể loại, trang chi tiết và API.', url_for('libraryms.home'), 'Thư viện') }}
     {{ project_card('Bài tập Flask', 'Máy tính, tính điểm học phần, quản lý sách và bài tập route.', url_for('assignment_home'), 'Bài tập') }}
   </section>
   <section class="mt-8 rounded-2xl border border-indigo-100 bg-indigo-50/70 p-5 sm:p-6">
     <h2 class="font-semibold text-indigo-950">Bài tập Flask</h2>
     <div class="mt-3 flex flex-wrap gap-3 text-sm font-medium">
-      <a class="rounded-lg bg-white px-3 py-2 text-indigo-700 shadow-sm hover:bg-indigo-100" href="{{ url_for('buoi3.home') }}">Máy tính</a>
-      <a class="rounded-lg bg-white px-3 py-2 text-indigo-700 shadow-sm hover:bg-indigo-100" href="{{ url_for('chuong5.home') }}">Chương 5</a>
+      <a class="rounded-lg bg-white px-3 py-2 text-indigo-700 shadow-sm hover:bg-indigo-100" href="{{ url_for('chuong05.calc.tinh_toan') }}">Máy tính</a>
+      <a class="rounded-lg bg-white px-3 py-2 text-indigo-700 shadow-sm hover:bg-indigo-100" href="{{ url_for('chuong05.home') }}">Chương 05</a>
       <a class="rounded-lg bg-white px-3 py-2 text-indigo-700 shadow-sm hover:bg-indigo-100" href="{{ url_for('baitapchuong3.home') }}">Quản lý sách</a>
       <a class="rounded-lg bg-white px-3 py-2 text-indigo-700 shadow-sm hover:bg-indigo-100" href="{{ url_for('buoi4.tinh_toan') }}">Tính toán qua URL</a>
     </div>

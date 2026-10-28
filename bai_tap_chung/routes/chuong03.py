@@ -68,7 +68,7 @@ def student_summary(mssv):
 
 
 def layout(title, body):
-    return render_template("projects/chuong03/page.html", title=title, body=body)
+    return render_template("projects/chuong-03/page.html", title=title, body=body)
 
 
 # PHẦN 1: GIAO DIỆN WEB

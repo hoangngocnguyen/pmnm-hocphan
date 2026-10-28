@@ -82,4 +82,4 @@ def show_post(post_id):
         return "Không tìm thấy bài viết!", 404
 
     # Trả về giao diện HTML (hoặc trả về trực tiếp dict/string để test)
-    return render_template("projects/bai_tap/post_detail.html", post=post)
+    return render_template("projects/bai-tap/post_detail.html", post=post)

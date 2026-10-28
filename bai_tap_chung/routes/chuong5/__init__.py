@@ -1,5 +1,5 @@
-"""Router and exercises for Chapter 5."""
+"""Compatibility wrapper for chuong05."""
 
-from .router import chuong5_bp
+from ..chuong05 import chuong05_bp, chuong5_bp
 
-__all__ = ["chuong5_bp"]
+__all__ = ["chuong05_bp", "chuong5_bp"]

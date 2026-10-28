@@ -50,7 +50,7 @@ def home():
     total_books = len(BOOKS)
     available_books = sum(1 for b in BOOKS if b["available"])
     return render_template(
-        "projects/bai_tap/books/index.html",
+        "projects/bai-tap/books/index.html",
         total_books=total_books,
         available_books=available_books,
     )
@@ -72,7 +72,7 @@ def book_list():
         filtered_books = BOOKS
 
     return render_template(
-        "projects/bai_tap/books/books.html",
+        "projects/bai-tap/books/books.html",
         books=filtered_books,
         categories=categories,
         selected_category=selected_category,
@@ -85,7 +85,7 @@ def book_detail(book_id):
     book = find_book(book_id)
     if not book:
         abort(404, description=f"Không có sách với ID = {book_id}")
-    return render_template("projects/bai_tap/books/detail.html", book=book)
+    return render_template("projects/bai-tap/books/detail.html", book=book)
 
 
 # 5. API Endpoints (Trả về JSON)

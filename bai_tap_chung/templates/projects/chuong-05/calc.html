@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Bài 1 · Máy tính{% endblock %}
+{% block content %}
+  <div class="mx-auto max-w-xl">
+    <a class="text-sm font-medium text-indigo-700 hover:underline" href="{{ url_for('chuong05.home') }}">← Danh sách bài Chương 05</a>
+    <section class="mt-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+      <header class="mb-6">
+        <p class="text-sm font-semibold uppercase tracking-wider text-indigo-700">Chương 05 · Form và dữ liệu</p>
+        <h1 class="mt-1 text-2xl font-bold text-slate-950">Bài 1 · Máy tính</h1>
+        <p class="mt-1 text-sm text-slate-500">Nhập hai số và chọn phép toán. Hỗ trợ số thập phân với dấu phẩy hoặc dấu chấm.</p>
+      </header>
+      <form method="post" class="space-y-4">
+        <div>
+          <label for="numA" class="mb-1 block text-sm font-medium text-slate-700">Số a</label>
+          <input type="text" inputmode="decimal" id="numA" name="a" value="{{ a }}" placeholder="Ví dụ: 7,5" required aria-describedby="errorA" class="w-full rounded-lg border {% if errors.a %}border-red-500{% else %}border-slate-300{% endif %} px-3 py-2.5 focus:border-indigo-500 focus:outline-none" />
+          {% if errors.a %}<p id="errorA" class="mt-1 text-sm text-red-600">{{ errors.a }}</p>{% endif %}
+        </div>
+        <div>
+          <label for="operation" class="mb-1 block text-sm font-medium text-slate-700">Phép toán</label>
+          <select id="operation" name="op" aria-describedby="errorOp" class="w-full rounded-lg border {% if errors.op %}border-red-500{% else %}border-slate-300{% endif %} bg-white px-3 py-2.5 focus:border-indigo-500 focus:outline-none">
+            <option value="+" {% if op == '+' %}selected{% endif %}>Cộng (+)</option>
+            <option value="-" {% if op == '-' %}selected{% endif %}>Trừ (−)</option>
+            <option value="*" {% if op == '*' %}selected{% endif %}>Nhân (×)</option>
+            <option value="/" {% if op == '/' %}selected{% endif %}>Chia (÷)</option>
+            <option value="%" {% if op == '%' %}selected{% endif %}>Chia lấy dư (%)</option>
+          </select>
+          {% if errors.op %}<p id="errorOp" class="mt-1 text-sm text-red-600">{{ errors.op }}</p>{% endif %}
+        </div>
+        <div>
+          <label for="numB" class="mb-1 block text-sm font-medium text-slate-700">Số b</label>
+          <input type="text" inputmode="decimal" id="numB" name="b" value="{{ b }}" placeholder="Ví dụ: 2" required aria-describedby="errorB" class="w-full rounded-lg border {% if errors.b %}border-red-500{% else %}border-slate-300{% endif %} px-3 py-2.5 focus:border-indigo-500 focus:outline-none" />
+          {% if errors.b %}<p id="errorB" class="mt-1 text-sm text-red-600">{{ errors.b }}</p>{% endif %}
+        </div>
+        <button type="submit" class="w-full rounded-lg bg-indigo-600 px-4 py-2.5 font-semibold text-white hover:bg-indigo-700">Tính kết quả</button>
+      </form>
+      {% if result %}
+        <section class="mt-6 rounded-xl bg-emerald-50 p-4" aria-live="polite">
+          <h2 class="text-xs font-semibold uppercase tracking-wider text-emerald-800">Kết quả</h2>
+          <p class="mt-1 text-lg font-bold text-emerald-900">{{ result }}</p>
+        </section>
+      {% endif %}
+    </section>
+  </div>
+{% endblock %}
+

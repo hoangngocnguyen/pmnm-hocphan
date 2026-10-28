@@ -45,5 +45,5 @@ def home():
                 result = f"{a} {op} {b} = {display}"
 
     return render_template(
-        "projects/bai_tap/math.html", result=result, a=a, b=b, op=op, errors=errors
+        "projects/bai-tap/math.html", result=result, a=a, b=b, op=op, errors=errors
     )

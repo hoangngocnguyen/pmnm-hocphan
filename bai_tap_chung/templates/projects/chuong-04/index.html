@@ -1,4 +1,4 @@
-{% extends "projects/chuong4/base.html" %}
+{% extends "projects/chuong-04/base.html" %}
 {% from "macros/ui.html" import stat_card %}
 {% block title %}Trang chủ · {{ shop.name }}{% endblock %}
 {% block content %}
@@ -6,7 +6,7 @@
     <p class="text-sm font-semibold uppercase tracking-wider text-amber-800">Cà phê Sông Hương</p>
     <h1 class="mt-2 text-3xl font-bold text-slate-950">Một góc nhỏ để thưởng thức cà phê</h1>
     <p class="mt-3 max-w-2xl leading-7 text-slate-600">Ghé quán, chọn món thân quen và để ngày trôi thật chậm.</p>
-    <a class="mt-5 inline-flex rounded-lg bg-amber-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-amber-800" href="{{ url_for('chuong4.show_menu') }}">Xem thực đơn</a>
+    <a class="mt-5 inline-flex rounded-lg bg-amber-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-amber-800" href="{{ url_for('chuong04.show_menu') }}">Xem thực đơn</a>
   </section>
   <div class="grid gap-4 md:grid-cols-2">
     {{ stat_card('Địa chỉ', shop.address, 'Cà phê Sông Hương') }}
