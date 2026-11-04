@@ -13,7 +13,9 @@ app.json.ensure_ascii = False
 app.add_template_filter(vnd_format, "vnd")
 
 # Mỗi nhóm bài tập là một blueprint độc lập, đặt dưới một tiền tố URL riêng thống nhất (chuong-03, chuong-04, chuong-05...).
-app.register_blueprint(chuong03_bp, url_prefix="/chuong-03")
+app.register_blueprint(
+    chuong03_bp, url_prefix="/chuong-03"
+)  # Đăng ký Blueprint và gom tất cả đường dẫn của nó vào mục /chuong-03
 app.register_blueprint(chuong04_bp, url_prefix="/chuong-04")
 app.register_blueprint(chuong05_bp, url_prefix="/chuong-05")
 app.register_blueprint(libraryms_bp, url_prefix="/libraryms")
