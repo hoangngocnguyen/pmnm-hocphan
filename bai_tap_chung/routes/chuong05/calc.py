@@ -23,26 +23,25 @@ def tinh_toan():
             except ValueError:
                 errors[name] = "Vui lòng nhập số hợp lệ."
 
-        if op not in ("+", "-", "*", "/", "%"):
+        if op not in ("+", "-", "*", "/"):
             errors["op"] = "Phép toán không hợp lệ."
 
         if not errors["a"] and not errors["b"] and not errors["op"]:
             left, right = values["a"], values["b"]
             if op == "/" and right == 0:
                 errors["b"] = "Không thể chia cho 0."
-            elif op == "%" and right == 0:
-                errors["b"] = "Không thể chia lấy dư cho 0."
             else:
                 calculated = {
                     "+": left + right,
                     "-": left - right,
                     "*": left * right,
                     "/": left / right if right != 0 else 0,
-                    "%": left % right if right != 0 else 0,
                 }[op]
 
                 display = (
-                    str(int(calculated)) if calculated.is_integer() else f"{calculated:g}"
+                    str(int(calculated))
+                    if calculated.is_integer()
+                    else f"{calculated:g}"
                 )
                 result = f"{a} {op} {b} = {display}"
 
@@ -58,4 +57,3 @@ def tinh_toan():
 
 # Alias
 home = tinh_toan
-
