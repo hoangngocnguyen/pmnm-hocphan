@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh Sách Sinh Viên</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; }
+        h2 { color: #333; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+    </style>
+</head>
+<body>
+    <h2>Danh Sách Sinh Viên</h2>
+
+    {% if students %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>MSSV</th>
+                <th>Họ và Tên</th>
+                <th>Điểm GPA</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sv in students %}
+            <tr>
+                <td>{{ sv.id }}</td>
+                <td>{{ sv.mssv }}</td>
+                <td>{{ sv.name }}</td>
+                <td>{{ sv.gpa }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p>Chưa có sinh viên nào trong danh sách.</p>
+    {% endif %}
+</body>
+</html>

@@ -4,7 +4,7 @@ from routes.chuong03 import chuong03_bp
 from routes.chuong04 import chuong04_bp, vnd_format
 from routes.chuong05 import chuong05_bp
 from routes.libraryms import libraryms_bp
-from sqlalchemy import Float, String
+from sqlalchemy import Float, String, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from routes.baitapchuong3 import baitapchuong3_bp
@@ -65,19 +65,53 @@ def add_sample_data():
     if total > 0:
         return f"Bảng đã có {total} dòng dữ liệu, bỏ qua bước seed data!", 200
 
-    # Danh sách 5 sinh viên mẫu với MSSV dạng 23T10800xx
+    # Danh sách 5 sinh viên mẫu
     sample_students = [
-        Student(mssv="23T1080001", name="Nguyen Van An", gpa=3.2),
-        Student(mssv="23T1080002", name="Tran Thi Binh", gpa=3.6),
-        Student(mssv="23T1080003", name="Le Hoang Cuong", gpa=2.8),
-        Student(mssv="23T1080004", name="Pham Minh Dung", gpa=3.9),
-        Student(mssv="23T1080005", name="Vo Thi Em", gpa=3.0),
+        Student(mssv="23T1080001", name="Nguyễn Văn An", gpa=8.2),
+        Student(mssv="23T1080002", name="Trần Thị Bình", gpa=7.6),
+        Student(mssv="23T1080003", name="Lê Hoàng Cường", gpa=9.8),
+        Student(mssv="23T1080004", name="Phạm Minh Dũng", gpa=6.9),
+        Student(mssv="23T1080005", name="Võ Thị Em", gpa=6.0),
     ]
 
     db.session.add_all(sample_students)
     db.session.commit()
 
     return "Đã seed thành công 5 sinh viên mới vào database!", 201
+
+
+@app.get("/thu-truy-van")
+def try_queries():
+    if db.session.scalar(db.select(func.count(Student.id))) == 0:
+        return "Chưa có dữ liệu, hãy mở /them-mau trước."
+
+    lines = []
+    lines.append(f"1. get(3): {db.session.get(Student, 3)}")
+    lines.append(f"2. get(99): {db.session.get(Student, 99)}")
+
+    everyone = db.session.execute(db.select(Student)).scalars().all()
+    lines.append(f"3. Tất cả: {len(everyone)} sinh viên")
+
+    stmt = db.select(Student).where(Student.gpa >= 8).order_by(Student.gpa.desc())
+    good = db.session.execute(stmt).scalars().all()
+    lines.append(f"4. Điểm >= 8: {good}")
+
+    sinh = db.session.scalar(db.select(Student).filter_by(mssv="23T1020002"))
+    lines.append(f"5. MSSV 23T1020002: {sinh}")
+
+    count = db.session.scalar(db.select(func.count(Student.id)))
+    avg = db.session.scalar(db.select(func.avg(Student.gpa)))
+    lines.append(f"6. Số SV: {count}, điểm TB: {avg:.2f}")
+
+    return "\n".join(lines), {"Content-Type": "text/plain; charset=utf-8"}
+
+
+@app.get("/danh-sach-sv")
+def list_students():
+    # Lấy toàn bộ danh sách sinh viên từ CSDL
+    students = db.session.execute(db.select(Student)).scalars().all()
+
+    return render_template("projects/chuong-06/sinhvien.html", students=students)
 
 
 @app.route("/")
