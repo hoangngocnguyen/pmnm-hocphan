@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% from 'macros/ui.html' import page_header, stat_card %}
+
+{% block title %}Tổng quan · Quản lý sách{% endblock %}
+
+{% block content %}
+{{ page_header('Tổng quan', 'Số liệu nhanh về danh mục và sách trong hệ thống') }}
+
+<div class="grid gap-4 sm:grid-cols-3">
+  {{ stat_card('Danh mục', total_categories) }}
+  {{ stat_card('Đầu sách', total_books) }}
+  {{ stat_card('Tổng tồn kho', '{:,.0f}'.format(total_stock), 'cuốn') }}
+</div>
+
+<div class="grid gap-6 lg:grid-cols-5">
+  <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm lg:col-span-3">
+    <div class="mb-4 flex items-center justify-between">
+      <h2 class="font-bold text-slate-900">Sách theo danh mục</h2>
+      <a href="{{ url_for('main.list_categories') }}" class="text-sm font-medium text-indigo-600 hover:underline">Quản lý</a>
+    </div>
+
+    {% if category_stats %}
+    <ul class="space-y-4">
+      {% for c in category_stats %}
+      <li>
+        <a href="{{ url_for('main.list_books', category_id=c.id) }}" class="group block">
+          <div class="mb-1 flex items-center justify-between text-sm">
+            <span class="font-medium text-slate-700 group-hover:text-indigo-600">{{ c.name }}</span>
+            <span class="text-slate-500">{{ c.books }} đầu sách · {{ c.stock }} tồn</span>
+          </div>
+          <div class="h-2 overflow-hidden rounded-full bg-slate-100">
+            <div class="h-full rounded-full bg-indigo-500" style="width: {{ (c.books / max_books * 100) if max_books else 0 }}%"></div>
+          </div>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="py-6 text-center text-sm text-slate-500">
+      Chưa có danh mục nào. <a href="{{ url_for('main.add_category') }}" class="font-medium text-indigo-600 hover:underline">Thêm danh mục đầu tiên</a>
+    </p>
+    {% endif %}
+  </section>
+
+  <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm lg:col-span-2">
+    <div class="mb-4 flex items-center justify-between">
+      <h2 class="font-bold text-slate-900">Sách mới thêm</h2>
+      <a href="{{ url_for('main.list_books') }}" class="text-sm font-medium text-indigo-600 hover:underline">Xem tất cả</a>
+    </div>
+
+    {% if recent_books %}
+    <ul class="divide-y divide-slate-100">
+      {% for book in recent_books %}
+      <li class="flex items-center justify-between gap-3 py-3">
+        <div class="min-w-0">
+          <p class="truncate text-sm font-semibold text-slate-800">{{ book.title }}</p>
+          <p class="truncate text-xs text-slate-500">{{ book.author }} · {{ book.category.name }}</p>
+        </div>
+        <span class="shrink-0 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">{{ book.stock }} cuốn</span>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="py-6 text-center text-sm text-slate-500">Chưa có sách nào.</p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

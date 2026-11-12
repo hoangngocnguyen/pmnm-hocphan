@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% from 'macros/ui.html' import page_header %}
+
+{% block title %}{{ 'Sửa danh mục' if category else 'Thêm danh mục' }} · Quản lý sách{% endblock %}
+
+{% block content %}
+{{ page_header('Sửa danh mục' if category else 'Thêm danh mục', '', url_for('main.list_categories'), 'Quay lại', back=True) }}
+
+{% set base_cls = 'w-full rounded-lg border px-4 py-2.5 text-sm outline-none focus:ring-2' %}
+{% set ok_cls = 'border-slate-300 focus:border-indigo-500 focus:ring-indigo-200' %}
+{% set err_cls = 'border-red-400 bg-red-50 focus:border-red-500 focus:ring-red-200' %}
+
+<div class="max-w-xl rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+  <form method="post" novalidate class="space-y-5">
+    <div>
+      <label for="name" class="mb-1.5 block text-sm font-medium text-slate-700">Tên danh mục</label>
+      <input id="name" name="name" type="text" value="{{ form.name }}" autofocus placeholder="Ví dụ: Khoa học máy tính" class="{{ base_cls }} {{ err_cls if errors.name else ok_cls }}" />
+      {% if errors.name %}<p class="mt-1 text-xs text-red-600">{{ errors.name }}</p>{% endif %}
+    </div>
+
+    <div>
+      <label for="description" class="mb-1.5 block text-sm font-medium text-slate-700">Mô tả <span class="font-normal text-slate-400">(không bắt buộc)</span></label>
+      <textarea id="description" name="description" rows="3" class="{{ base_cls }} {{ err_cls if errors.description else ok_cls }}">{{ form.description }}</textarea>
+      {% if errors.description %}<p class="mt-1 text-xs text-red-600">{{ errors.description }}</p>{% endif %}
+    </div>
+
+    <div class="flex justify-end gap-2">
+      <a href="{{ url_for('main.list_categories') }}" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Hủy</a>
+      <button type="submit" class="rounded-lg bg-indigo-600 px-5 py-2 text-sm font-semibold text-white hover:bg-indigo-500">Lưu</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

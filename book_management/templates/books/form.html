@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% from 'macros/ui.html' import page_header %}
+
+{% block title %}{{ 'Sửa sách' if book else 'Thêm sách' }} · Quản lý sách{% endblock %}
+
+{% block content %}
+{{ page_header('Sửa sách' if book else 'Thêm sách', '', url_for('main.list_books'), 'Quay lại', back=True) }}
+
+{% set base_cls = 'w-full rounded-lg border px-4 py-2.5 text-sm outline-none focus:ring-2' %}
+{% set ok_cls = 'border-slate-300 focus:border-indigo-500 focus:ring-indigo-200' %}
+{% set err_cls = 'border-red-400 bg-red-50 focus:border-red-500 focus:ring-red-200' %}
+
+<div class="max-w-2xl rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+  <form method="post" novalidate class="grid gap-5 sm:grid-cols-2">
+    <div class="sm:col-span-2">
+      <label for="title" class="mb-1.5 block text-sm font-medium text-slate-700">Tên sách</label>
+      <input id="title" name="title" type="text" value="{{ form.title }}" autofocus class="{{ base_cls }} {{ err_cls if errors.title else ok_cls }}" />
+      {% if errors.title %}<p class="mt-1 text-xs text-red-600">{{ errors.title }}</p>{% endif %}
+    </div>
+
+    <div>
+      <label for="author" class="mb-1.5 block text-sm font-medium text-slate-700">Tác giả</label>
+      <input id="author" name="author" type="text" value="{{ form.author }}" class="{{ base_cls }} {{ err_cls if errors.author else ok_cls }}" />
+      {% if errors.author %}<p class="mt-1 text-xs text-red-600">{{ errors.author }}</p>{% endif %}
+    </div>
+
+    <div>
+      <label for="category_id" class="mb-1.5 block text-sm font-medium text-slate-700">Danh mục</label>
+      <select id="category_id" name="category_id" class="{{ base_cls }} {{ err_cls if errors.category_id else ok_cls }}">
+        <option value="">-- Chọn danh mục --</option>
+        {% for category in categories %}
+        <option value="{{ category.id }}" {% if form.category_id == category.id|string %}selected{% endif %}>{{ category.name }}</option>
+        {% endfor %}
+      </select>
+      {% if errors.category_id %}<p class="mt-1 text-xs text-red-600">{{ errors.category_id }}</p>{% endif %}
+    </div>
+
+    <div>
+      <label for="price" class="mb-1.5 block text-sm font-medium text-slate-700">Giá (đ)</label>
+      <input id="price" name="price" type="text" inputmode="decimal" value="{{ form.price }}" class="{{ base_cls }} {{ err_cls if errors.price else ok_cls }}" />
+      {% if errors.price %}<p class="mt-1 text-xs text-red-600">{{ errors.price }}</p>{% endif %}
+    </div>
+
+    <div>
+      <label for="stock" class="mb-1.5 block text-sm font-medium text-slate-700">Tồn kho</label>
+      <input id="stock" name="stock" type="text" inputmode="numeric" value="{{ form.stock }}" class="{{ base_cls }} {{ err_cls if errors.stock else ok_cls }}" />
+      {% if errors.stock %}<p class="mt-1 text-xs text-red-600">{{ errors.stock }}</p>{% endif %}
+    </div>
+
+    <div class="flex justify-end gap-2 sm:col-span-2">
+      <a href="{{ url_for('main.list_books') }}" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50">Hủy</a>
+      <button type="submit" class="rounded-lg bg-indigo-600 px-5 py-2 text-sm font-semibold text-white hover:bg-indigo-500">Lưu</button>
+    </div>
+  </form>
+</div>
+{% endblock %}
