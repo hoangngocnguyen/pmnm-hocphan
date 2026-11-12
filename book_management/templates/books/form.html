@@ -11,22 +11,26 @@
 {% set err_cls = 'border-red-400 bg-red-50 focus:border-red-500 focus:ring-red-200' %}
 
 <div class="max-w-2xl rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-  <form method="post" novalidate class="grid gap-5 sm:grid-cols-2">
+  <form method="post" class="grid gap-5 sm:grid-cols-2">
     <div class="sm:col-span-2">
       <label for="title" class="mb-1.5 block text-sm font-medium text-slate-700">Tên sách</label>
-      <input id="title" name="title" type="text" value="{{ form.title }}" autofocus class="{{ base_cls }} {{ err_cls if errors.title else ok_cls }}" />
+      <input id="title" name="title" type="text" value="{{ form.title }}" autofocus
+             required maxlength="200" pattern=".*\S.*"
+             class="{{ base_cls }} {{ err_cls if errors.title else ok_cls }}" />
       {% if errors.title %}<p class="mt-1 text-xs text-red-600">{{ errors.title }}</p>{% endif %}
     </div>
 
     <div>
       <label for="author" class="mb-1.5 block text-sm font-medium text-slate-700">Tác giả</label>
-      <input id="author" name="author" type="text" value="{{ form.author }}" class="{{ base_cls }} {{ err_cls if errors.author else ok_cls }}" />
+      <input id="author" name="author" type="text" value="{{ form.author }}"
+             required maxlength="100" pattern=".*\S.*"
+             class="{{ base_cls }} {{ err_cls if errors.author else ok_cls }}" />
       {% if errors.author %}<p class="mt-1 text-xs text-red-600">{{ errors.author }}</p>{% endif %}
     </div>
 
     <div>
       <label for="category_id" class="mb-1.5 block text-sm font-medium text-slate-700">Danh mục</label>
-      <select id="category_id" name="category_id" class="{{ base_cls }} {{ err_cls if errors.category_id else ok_cls }}">
+      <select id="category_id" name="category_id" required class="{{ base_cls }} {{ err_cls if errors.category_id else ok_cls }}">
         <option value="">-- Chọn danh mục --</option>
         {% for category in categories %}
         <option value="{{ category.id }}" {% if form.category_id == category.id|string %}selected{% endif %}>{{ category.name }}</option>
@@ -37,13 +41,17 @@
 
     <div>
       <label for="price" class="mb-1.5 block text-sm font-medium text-slate-700">Giá (đ)</label>
-      <input id="price" name="price" type="text" inputmode="decimal" value="{{ form.price }}" class="{{ base_cls }} {{ err_cls if errors.price else ok_cls }}" />
+      <input id="price" name="price" type="number" value="{{ form.price }}"
+             required min="0" max="1000000000" step="1"
+             class="{{ base_cls }} {{ err_cls if errors.price else ok_cls }}" />
       {% if errors.price %}<p class="mt-1 text-xs text-red-600">{{ errors.price }}</p>{% endif %}
     </div>
 
     <div>
       <label for="stock" class="mb-1.5 block text-sm font-medium text-slate-700">Tồn kho</label>
-      <input id="stock" name="stock" type="text" inputmode="numeric" value="{{ form.stock }}" class="{{ base_cls }} {{ err_cls if errors.stock else ok_cls }}" />
+      <input id="stock" name="stock" type="number" value="{{ form.stock }}"
+             required min="0" max="1000000" step="1"
+             class="{{ base_cls }} {{ err_cls if errors.stock else ok_cls }}" />
       {% if errors.stock %}<p class="mt-1 text-xs text-red-600">{{ errors.stock }}</p>{% endif %}
     </div>
 
@@ -53,4 +61,23 @@
     </div>
   </form>
 </div>
+
+<script>
+  // Thông báo tiếng Việt thay cho câu mặc định của trình duyệt
+  const messages = {
+    title: 'Tên sách không được để trống.',
+    author: 'Tác giả không được để trống.',
+    category_id: 'Vui lòng chọn danh mục.',
+    price: 'Giá phải là số nguyên từ 0 đến 1.000.000.000.',
+    stock: 'Tồn kho phải là số nguyên từ 0 đến 1.000.000.'
+  };
+
+  document.querySelectorAll('input, select').forEach(function (el) {
+    if (!messages[el.name]) return;
+    el.addEventListener('invalid', function () { el.setCustomValidity(messages[el.name]); });
+    ['input', 'change'].forEach(function (evt) {
+      el.addEventListener(evt, function () { el.setCustomValidity(''); });
+    });
+  });
+</script>
 {% endblock %}
