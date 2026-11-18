@@ -1,0 +1,121 @@
+{% extends "layouts/admin_base.html" %}
+{% from "macros/components.html" import status_badge %}
+{% from "macros/pagination.html" import render_pagination %}
+
+{% block title %}Quản lý đơn hàng - Quản trị Nhà sách Sông Hương{% endblock %}
+{% block header_title %}Đơn hàng{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">
+            Đơn hàng
+        </h1>
+    </div>
+
+    <!-- Status Tabs (Màn ⑩ Top) -->
+    <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs border-b border-slate-200">
+        <!-- Tab Tất cả -->
+        <a href="{{ url_for('admin.orders', status='all', q=search_query) }}" 
+           class="px-3.5 py-2 rounded-xl font-semibold transition whitespace-nowrap {% if status_tab == 'all' %}bg-slate-900 text-white shadow-xs{% else %}text-slate-600 hover:bg-slate-200/60{% endif %}">
+            Tất cả ({{ total_orders }})
+        </a>
+
+        <!-- Tab Chờ xác nhận -->
+        <a href="{{ url_for('admin.orders', status='Chờ xác nhận', q=search_query) }}" 
+           class="px-3.5 py-2 rounded-xl font-semibold transition whitespace-nowrap flex items-center gap-1.5 {% if status_tab == 'Chờ xác nhận' %}bg-amber-500 text-white shadow-xs{% else %}text-amber-800 bg-amber-50 hover:bg-amber-100{% endif %}">
+            <span>Chờ xác nhận</span>
+            <span>({{ status_counts.get('Chờ xác nhận', 0) }})</span>
+        </a>
+
+        <!-- Tab Đang giao -->
+        <a href="{{ url_for('admin.orders', status='Đang giao', q=search_query) }}" 
+           class="px-3.5 py-2 rounded-xl font-semibold transition whitespace-nowrap flex items-center gap-1.5 {% if status_tab == 'Đang giao' %}bg-sky-600 text-white shadow-xs{% else %}text-sky-800 bg-sky-50 hover:bg-sky-100{% endif %}">
+            <span>Đang giao</span>
+            <span>({{ status_counts.get('Đang giao', 0) }})</span>
+        </a>
+
+        <!-- Tab Hoàn tất -->
+        <a href="{{ url_for('admin.orders', status='Hoàn tất', q=search_query) }}" 
+           class="px-3.5 py-2 rounded-xl font-semibold transition whitespace-nowrap flex items-center gap-1.5 {% if status_tab == 'Hoàn tất' %}bg-emerald-600 text-white shadow-xs{% else %}text-emerald-800 bg-emerald-50 hover:bg-emerald-100{% endif %}">
+            <span>Hoàn tất</span>
+            <span>({{ status_counts.get('Hoàn tất', 0) }})</span>
+        </a>
+
+        <!-- Tab Đã huỷ -->
+        <a href="{{ url_for('admin.orders', status='Đã huỷ', q=search_query) }}" 
+           class="px-3.5 py-2 rounded-xl font-semibold transition whitespace-nowrap flex items-center gap-1.5 {% if status_tab == 'Đã huỷ' %}bg-rose-600 text-white shadow-xs{% else %}text-rose-800 bg-rose-50 hover:bg-rose-100{% endif %}">
+            <span>Đã huỷ</span>
+            <span>({{ status_counts.get('Đã huỷ', 0) }})</span>
+        </a>
+    </div>
+
+    <!-- Search Input Bar -->
+    <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+        <form method="GET" action="{{ url_for('admin.orders') }}" class="flex gap-3">
+            <input type="hidden" name="status" value="{{ status_tab }}">
+            <div class="flex-1 relative">
+                <input type="text" name="q" value="{{ search_query }}" 
+                       placeholder="Mã đơn, tên khách hàng, số điện thoại..." 
+                       class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs placeholder-slate-400 focus:outline-none focus:bg-white focus:border-blue-600 transition">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+            </div>
+            <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl transition">
+                Tìm
+            </button>
+        </form>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 text-slate-500 font-semibold uppercase border-b border-slate-200">
+                        <th class="py-3.5 px-4">Mã</th>
+                        <th class="py-3.5 px-4">Ngày đặt</th>
+                        <th class="py-3.5 px-4">Khách hàng</th>
+                        <th class="py-3.5 px-4">Điện thoại</th>
+                        <th class="py-3.5 px-4 text-right">Tổng tiền</th>
+                        <th class="py-3.5 px-4 text-center">Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for order in orders %}
+                    <tr class="hover:bg-slate-50 transition cursor-pointer" onclick="window.location='{{ url_for('admin.order_detail', id=order.id) }}'">
+                        <td class="py-3 px-4 font-bold text-blue-600">#{{ order.id }}</td>
+                        <td class="py-3 px-4 text-slate-500">{{ order.created_at.strftime('%d/%m/%Y') }}</td>
+                        <td class="py-3 px-4 font-bold text-slate-900">{{ order.customer_name }}</td>
+                        <td class="py-3 px-4 text-slate-600 font-mono">{{ order.customer_phone }}</td>
+                        <td class="py-3 px-4 text-right font-extrabold text-slate-800">{{ order.total_amount | vnd }}</td>
+                        <td class="py-3 px-4 text-center">
+                            {{ status_badge(order.status) }}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="py-8 text-center text-slate-400">Không tìm thấy đơn hàng nào.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Dòng cuối: số đơn và tổng giá trị của bộ lọc hiện tại (Màn ⑩) -->
+        <div class="p-4 bg-slate-50/80 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between text-xs gap-2">
+            <span class="text-slate-500 italic">Bấm vào một dòng để xem chi tiết đơn hàng</span>
+            <div class="flex items-center gap-2 font-semibold text-slate-700">
+                <span>{{ filter_total_count }} đơn</span>
+                <span>·</span>
+                <span>tổng giá trị:</span>
+                <span class="text-sm font-extrabold text-amber-600">{{ filter_total_amount | vnd }}</span>
+            </div>
+        </div>
+
+        <!-- Phân trang 10 đơn/trang -->
+        {{ render_pagination(pagination, 'admin.orders') }}
+    </div>
+</div>
+{% endblock %}

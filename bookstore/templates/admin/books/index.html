@@ -1,0 +1,177 @@
+{% extends "layouts/admin_base.html" %}
+{% from "macros/pagination.html" import render_pagination %}
+
+{% block title %}Quản lý sách - Quản trị Nhà sách Sông Hương{% endblock %}
+{% block header_title %}Quản lý sách{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header Action Bar -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">
+                Sách <span class="text-slate-400 font-normal">({{ total_books_count }})</span>
+            </h1>
+        </div>
+        <a href="{{ url_for('admin.book_new') }}" 
+           class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-bold rounded-xl shadow-xs transition">
+            <span class="text-sm font-bold">+</span>
+            <span>Thêm sách</span>
+        </a>
+    </div>
+
+    <!-- Filters Bar (Màn ⑦) -->
+    <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+        <form method="GET" action="{{ url_for('admin.books') }}" class="flex flex-col sm:flex-row gap-3">
+            <!-- Search Input -->
+            <div class="flex-1 relative">
+                <input type="text" name="q" value="{{ search_query }}" 
+                       placeholder="Tìm tên sách, tác giả..." 
+                       class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs placeholder-slate-400 focus:outline-none focus:bg-white focus:border-blue-600 focus:ring-1 focus:ring-blue-600/20 transition">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+            </div>
+
+            <!-- Category Dropdown -->
+            <div class="sm:w-48 relative">
+                <select name="category_id" 
+                        class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 focus:outline-none focus:bg-white focus:border-blue-600 appearance-none">
+                    <option value="">Mọi danh mục</option>
+                    {% for cat in categories %}
+                    <option value="{{ cat.id }}" {% if current_category == cat.id %}selected{% endif %}>
+                        {{ cat.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-slate-400">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+            </div>
+
+            <!-- Stock Filter Dropdown -->
+            <div class="sm:w-44 relative">
+                <select name="stock_filter" 
+                        class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 focus:outline-none focus:bg-white focus:border-blue-600 appearance-none">
+                    <option value="all" {% if current_stock == 'all' %}selected{% endif %}>Tồn kho</option>
+                    <option value="in_stock" {% if current_stock == 'in_stock' %}selected{% endif %}>Còn hàng (> 5)</option>
+                    <option value="low_stock" {% if current_stock == 'low_stock' %}selected{% endif %}>Sắp hết (≤ 5)</option>
+                    <option value="out_of_stock" {% if current_stock == 'out_of_stock' %}selected{% endif %}>Hết hàng (0)</option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-slate-400">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+            </div>
+
+            <!-- Lọc Button -->
+            <button type="submit" 
+                    class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-xl transition">
+                Lọc
+            </button>
+        </form>
+    </div>
+
+    <!-- Books Table -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 text-slate-500 font-semibold uppercase border-b border-slate-200">
+                        <th class="py-3.5 px-4">Tên sách / Tác giả</th>
+                        <th class="py-3.5 px-4">Danh mục</th>
+                        <th class="py-3.5 px-4 text-right">Giá</th>
+                        <th class="py-3.5 px-4 text-center">Tồn</th>
+                        <th class="py-3.5 px-4 text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for book in books %}
+                    <tr class="hover:bg-slate-50/70 transition">
+                        <!-- Tên & Tác giả -->
+                        <td class="py-3 px-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-12 bg-slate-100 rounded-md overflow-hidden flex-shrink-0 border border-slate-200">
+                                    {% if book.cover_image %}
+                                    <img src="{{ url_for('static', filename='uploads/books/' + book.cover_image) }}" alt="" class="w-full h-full object-cover">
+                                    {% else %}
+                                    <div class="w-full h-full flex items-center justify-center text-[10px] text-slate-400">📖</div>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <a href="{{ url_for('admin.book_edit', id=book.id) }}" class="font-bold text-slate-900 hover:text-blue-600 transition block">
+                                        {{ book.title }}
+                                    </a>
+                                    <span class="text-slate-400 text-[11px]">{{ book.author }}</span>
+                                </div>
+                            </div>
+                        </td>
+
+                        <!-- Danh mục -->
+                        <td class="py-3 px-4 text-slate-600">
+                            {{ book.category.name }}
+                        </td>
+
+                        <!-- Giá -->
+                        <td class="py-3 px-4 text-right font-semibold text-slate-800">
+                            {{ book.price | vnd }}
+                        </td>
+
+                        <!-- Tồn kho (Tồn 0 tô đỏ) -->
+                        <td class="py-3 px-4 text-center font-bold">
+                            {% if book.stock == 0 %}
+                            <span class="text-rose-600 font-black px-2 py-0.5 rounded bg-rose-50 border border-rose-200">
+                                0
+                            </span>
+                            {% elif book.stock <= 5 %}
+                            <span class="text-amber-600">
+                                {{ book.stock }}
+                            </span>
+                            {% else %}
+                            <span class="text-slate-700">
+                                {{ book.stock }}
+                            </span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Thao tác (Sửa, Xoá) -->
+                        <td class="py-3 px-4 text-center whitespace-nowrap">
+                            <div class="inline-flex items-center gap-2">
+                                <!-- Sửa -->
+                                <a href="{{ url_for('admin.book_edit', id=book.id) }}" 
+                                   class="text-blue-600 hover:text-blue-800 font-semibold px-2 py-1 rounded hover:bg-blue-50 transition">
+                                    Sửa
+                                </a>
+
+                                <!-- Xoá (chặn nếu đã có trong đơn hàng) -->
+                                {% if book.is_in_order() %}
+                                <span class="text-slate-300 font-medium px-2 py-1 cursor-not-allowed select-none" 
+                                      title="Sách đã có trong đơn hàng, không thể xoá!">
+                                    Xoá
+                                </span>
+                                {% else %}
+                                <form method="POST" action="{{ url_for('admin.book_delete', id=book.id) }}" class="inline">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" 
+                                            onclick="return confirm('Bạn có chắc chắn muốn xoá cuốn sách này?')"
+                                            class="text-rose-600 hover:text-rose-800 font-semibold px-2 py-1 rounded hover:bg-rose-50 transition">
+                                        Xoá
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="py-8 text-center text-slate-400">Không tìm thấy sách nào phù hợp.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Phân trang (5 cuốn/trang, giữ bộ lọc) -->
+        {{ render_pagination(pagination, 'admin.books') }}
+    </div>
+</div>
+{% endblock %}

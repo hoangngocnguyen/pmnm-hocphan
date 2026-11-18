@@ -1,0 +1,18 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Lỗi máy chủ (500){% endblock %}
+
+{% block content %}
+<div class="min-h-[50vh] flex flex-col items-center justify-center text-center px-4">
+    <div class="w-20 h-20 bg-amber-50 text-amber-500 rounded-3xl flex items-center justify-center text-3xl mb-6 shadow-xs border border-amber-100">
+        ⚠️
+    </div>
+    <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight mb-2">500 - Lỗi máy chủ</h1>
+    <p class="text-sm text-slate-500 max-w-md mb-8">
+        Hệ thống đã ghi nhận sự cố nội bộ. Vui lòng thử lại sau ít phút hoặc quay về trang chủ.
+    </p>
+    <a href="{{ url_for('shop.index') }}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl shadow-sm transition">
+        Về trang chủ
+    </a>
+</div>
+{% endblock %}

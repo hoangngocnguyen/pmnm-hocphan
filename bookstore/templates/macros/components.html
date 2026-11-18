@@ -1,0 +1,111 @@
+{% macro render_field(field, placeholder="", extra_classes="", type="text") %}
+<div class="mb-4">
+    {% if field.label and field.type != 'BooleanField' %}
+    <label for="{{ field.id }}" class="block text-sm font-medium text-slate-700 mb-1.5">
+        {{ field.label.text }}
+    </label>
+    {% endif %}
+
+    {% if field.type == 'TextAreaField' %}
+        {{ field(
+            class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition duration-150 resize-y " + extra_classes + (" border-rose-500 focus:border-rose-500 focus:ring-rose-500/20" if field.errors else ""),
+            placeholder=placeholder,
+            rows=3
+        ) }}
+    {% elif field.type == 'SelectField' %}
+        <div class="relative">
+            {{ field(
+                class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-sm shadow-sm text-slate-700 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition duration-150 appearance-none " + extra_classes + (" border-rose-500 focus:border-rose-500 focus:ring-rose-500/20" if field.errors else "")
+            ) }}
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </div>
+        </div>
+    {% elif field.type == 'FileField' %}
+        <div class="mt-1">
+            {{ field(
+                class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer border border-slate-200 rounded-xl p-1.5 " + extra_classes
+            ) }}
+        </div>
+    {% elif field.type == 'RadioField' %}
+        <div class="space-y-2 mt-2">
+            {% for subfield in field %}
+            <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition {% if subfield.checked %}bg-blue-50/50 border-blue-300 ring-1 ring-blue-300{% endif %}">
+                {{ subfield(class="w-4 h-4 text-blue-600 focus:ring-blue-500 border-slate-300") }}
+                <span class="text-sm font-medium text-slate-700">{{ subfield.label.text }}</span>
+            </label>
+            {% endfor %}
+        </div>
+    {% else %}
+        {{ field(
+            class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-sm shadow-sm placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition duration-150 " + extra_classes + (" border-rose-500 focus:border-rose-500 focus:ring-rose-500/20" if field.errors else ""),
+            placeholder=placeholder
+        ) }}
+    {% endif %}
+
+    {% if field.errors %}
+        {% for error in field.errors %}
+        <p class="mt-1.5 text-xs text-rose-600 font-medium flex items-center gap-1.5">
+            <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+            {{ error }}
+        </p>
+        {% endfor %}
+    {% endif %}
+</div>
+{% endmacro %}
+
+
+{% macro status_badge(status) %}
+{% if status == 'Chờ xác nhận' %}
+    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-300">
+        <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5 animate-pulse"></span>
+        {{ status }}
+    </span>
+{% elif status == 'Đang giao' %}
+    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-sky-100 text-sky-800 border border-sky-300">
+        <span class="w-1.5 h-1.5 rounded-full bg-sky-500 mr-1.5"></span>
+        {{ status }}
+    </span>
+{% elif status == 'Hoàn tất' %}
+    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>
+        {{ status }}
+    </span>
+{% elif status == 'Đã huỷ' %}
+    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-100 text-rose-800 border border-rose-300">
+        <span class="w-1.5 h-1.5 rounded-full bg-rose-500 mr-1.5"></span>
+        {{ status }}
+    </span>
+{% else %}
+    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-800">
+        {{ status }}
+    </span>
+{% endif %}
+{% endmacro %}
+
+
+{% macro flash_alerts() %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 space-y-3">
+        {% for category, message in messages %}
+        <div class="flex items-center justify-between p-4 rounded-xl border shadow-sm transition duration-150 {% if category == 'error' or category == 'danger' %}bg-rose-50 border-rose-200 text-rose-800{% elif category == 'warning' %}bg-amber-50 border-amber-200 text-amber-800{% else %}bg-emerald-50 border-emerald-200 text-emerald-800{% endif %}" role="alert">
+            <div class="flex items-center gap-3">
+                {% if category == 'error' or category == 'danger' %}
+                <svg class="w-5 h-5 text-rose-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                {% elif category == 'warning' %}
+                <svg class="w-5 h-5 text-amber-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                {% else %}
+                <svg class="w-5 h-5 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                {% endif %}
+                <span class="text-sm font-medium">{{ message }}</span>
+            </div>
+            <button type="button" onclick="this.parentElement.remove()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+{% endwith %}
+{% endmacro %}
