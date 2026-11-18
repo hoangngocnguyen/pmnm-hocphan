@@ -5,64 +5,63 @@
 {% block header_title %}Danh mục sách{% endblock %}
 
 {% block content %}
-<div class="space-y-6">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        <!-- Cột Trái: Bảng Danh mục sách (7 cols) -->
-        <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
-            <div class="p-4 border-b border-slate-100 flex items-center justify-between">
-                <h2 class="font-extrabold text-slate-900 text-sm">
-                    Danh mục sách <span class="text-slate-400 font-normal">({{ categories_data|length }})</span>
+<div class="row g-4">
+    <!-- Cột Trái: Bảng Danh mục sách (7 cols) -->
+    <div class="col-lg-7">
+        <div class="card kpi-card">
+            <div class="card-header bg-white">
+                <h2 class="h6 fw-bold mb-0">
+                    Danh mục sách 
+                    <span class="text-secondary fw-normal">({{ categories_data|length }})</span>
                 </h2>
             </div>
 
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs border-collapse">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
                     <thead>
-                        <tr class="bg-slate-50 text-slate-500 font-semibold uppercase border-b border-slate-200">
-                            <th class="py-3 px-4">Tên danh mục</th>
-                            <th class="py-3 px-4 text-center">Số sách</th>
-                            <th class="py-3 px-4 text-center">Thao tác</th>
+                        <tr>
+                            <th>Tên danh mục</th>
+                            <th class="text-center">Số sách</th>
+                            <th class="text-center">Thao tác</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100">
+                    <tbody>
                         {% for cat, count in categories_data %}
-                        <tr class="hover:bg-slate-50/70 transition">
+                        <tr>
                             <!-- Tên danh mục (click sang màn ⑦ đã lọc) -->
-                            <td class="py-3 px-4">
+                            <td>
                                 <a href="{{ url_for('admin.books', category_id=cat.id) }}" 
-                                   class="font-bold text-slate-800 hover:text-blue-600 transition" 
+                                   class="fw-bold text-dark text-decoration-none"
                                    title="Xem sách trong danh mục này">
                                     {{ cat.name }}
                                 </a>
                                 {% if cat.description %}
-                                <p class="text-[11px] text-slate-400 line-clamp-1 mt-0.5">{{ cat.description }}</p>
+                                <div class="small text-secondary text-truncate">{{ cat.description }}</div>
                                 {% endif %}
                             </td>
 
                             <!-- Số sách -->
-                            <td class="py-3 px-4 text-center">
-                                <span class="font-bold px-2 py-0.5 rounded-md {% if count == 0 %}bg-slate-100 text-slate-400{% else %}bg-blue-50 text-blue-700{% endif %}">
+                            <td class="text-center">
+                                <span class="badge {% if count == 0 %}text-bg-light text-secondary border{% else %}text-bg-primary{% endif %}">
                                     {{ count }}
                                 </span>
                             </td>
 
                             <!-- Thao tác (Sửa, Xoá) -->
-                            <td class="py-3 px-4 text-center whitespace-nowrap">
-                                <div class="inline-flex items-center gap-2">
-                                    <a href="{{ url_for('admin.categories', edit_id=cat.id) }}" 
-                                       class="text-blue-600 hover:text-blue-800 font-semibold px-2 py-1 rounded hover:bg-blue-50 transition">
-                                        Sửa
-                                    </a>
+                            <td class="text-center">
+                                <a href="{{ url_for('admin.categories', edit_id=cat.id) }}" 
+                                   class="btn btn-link btn-sm text-decoration-none">
+                                    Sửa
+                                </a>
 
-                                    <form method="POST" action="{{ url_for('admin.category_delete', id=cat.id) }}" class="inline">
-                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                        <button type="submit" 
-                                                onclick="return confirm('Bạn có chắc chắn muốn xoá danh mục \'{{ cat.name }}\'?')"
-                                                class="text-rose-600 hover:text-rose-800 font-semibold px-2 py-1 rounded hover:bg-rose-50 transition">
-                                            Xoá
-                                        </button>
-                                    </form>
-                                </div>
+                                <form method="POST" action="{{ url_for('admin.category_delete', id=cat.id) }}" class="d-inline">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" 
+                                            onclick="return confirm('Bạn có chắc chắn muốn xoá danh mục {{ cat.name }}?')"
+                                            class="btn btn-link btn-sm text-danger text-decoration-none">
+                                        Xoá
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                         {% endfor %}
@@ -70,29 +69,34 @@
                 </table>
             </div>
         </div>
+    </div>
 
-        <!-- Cột Phải: Form Thêm / Sửa Danh mục (5 cols) -->
-        <div class="lg:col-span-5 bg-white rounded-2xl border border-slate-200/80 p-6 shadow-xs">
-            <h3 class="font-bold text-slate-900 text-sm mb-4 pb-3 border-b border-slate-100 flex items-center justify-between">
-                <span>{% if edit_category %}Sửa danh mục: {{ edit_category.name }}{% else %}Thêm danh mục{% endif %}</span>
+    <!-- Cột Phải: Form Thêm / Sửa Danh mục (5 cols) -->
+    <div class="col-lg-5">
+        <div class="card kpi-card">
+            <div class="card-header bg-white d-flex justify-content-between">
+                <h3 class="h6 fw-bold mb-0">
+                    {% if edit_category %}Sửa danh mục: {{ edit_category.name }}{% else %}Thêm danh mục{% endif %}
+                </h3>
                 {% if edit_category %}
-                <a href="{{ url_for('admin.categories') }}" class="text-xs font-normal text-slate-500 hover:text-slate-800">
+                <a href="{{ url_for('admin.categories') }}" class="small text-decoration-none">
                     ✕ Huỷ sửa
                 </a>
                 {% endif %}
-            </h3>
+            </div>
 
-            <form method="POST" action="{{ request.full_path }}" novalidate class="space-y-4">
-                {{ form.hidden_tag() }}
+            <div class="card-body">
+                <form method="POST" action="{{ request.full_path }}" novalidate>
+                    {{ form.hidden_tag() }}
 
-                {{ render_field(form.name, placeholder="Ví dụ: Lập trình, Kinh tế...") }}
-                {{ render_field(form.description, placeholder="Mô tả danh mục (tuỳ chọn)...") }}
+                    {{ render_field(form.name, placeholder="Ví dụ: Lập trình, Kinh tế...") }}
+                    {{ render_field(form.description, placeholder="Mô tả danh mục (tuỳ chọn)...") }}
 
-                <button type="submit" 
-                        class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold text-xs rounded-xl shadow-xs transition duration-150">
-                    {% if edit_category %}Cập nhật danh mục{% else %}+ Thêm{% endif %}
-                </button>
-            </form>
+                    <button type="submit" class="btn btn-brand w-100 btn-sm">
+                        {% if edit_category %}Cập nhật danh mục{% else %}+ Thêm{% endif %}
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 </div>

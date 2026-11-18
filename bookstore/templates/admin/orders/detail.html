@@ -1,167 +1,137 @@
 {% extends "layouts/admin_base.html" %}
 {% from "macros/components.html" import status_badge %}
-
 {% block title %}Chi tiết đơn hàng #{{ order.id }} - Quản trị{% endblock %}
-{% block header_title %}
-    <span class="text-slate-400 font-normal">Đơn hàng › </span>
-    <span>#{{ order.id }}</span>
-{% endblock %}
-
+{% block header_title %}<span class="text-secondary fw-normal">Đơn hàng › </span>#{{ order.id }}{% endblock %}
 {% block content %}
-<div class="space-y-6">
-    <!-- Header title -->
-    <div class="flex items-center justify-between pb-2 border-b border-slate-200">
-        <div>
-            <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">
-                Đơn hàng #{{ order.id }} <span class="text-xs font-normal text-slate-500">· {{ order.created_at.strftime('%d/%m/%Y %H:%M') }}</span>
-            </h1>
+<div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
+    <h1 class="h5 fw-bold mb-0">
+        Đơn hàng #{{ order.id }}
+        <span class="small text-secondary fw-normal">· {{ order.created_at.strftime('%d/%m/%Y %H:%M') }}</span>
+    </h1>
+    <a href="{{ url_for('admin.orders') }}" class="btn btn-light border btn-sm">← Quay lại</a>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <!-- Khách hàng & Sản phẩm Card -->
+        <div class="card kpi-card mb-4">
+            <div class="card-body">
+                <!-- Khách hàng thông tin -->
+                <h2 class="h6 text-uppercase text-secondary fw-bold">Khách hàng</h2>
+                <p class="mb-1">
+                    <strong>{{ order.customer_name }}</strong> · {{ order.customer_phone }}
+                </p>
+                <p class="text-secondary mb-1">{{ order.shipping_address }}</p>
+                {% if order.customer_email %}
+                <p class="text-secondary mb-2">{{ order.customer_email }}</p>
+                {% endif %}
+                <p class="border-top pt-2 mb-1">
+                    Thanh toán: <strong>{{ order.payment_method }}</strong>
+                </p>
+                {% if order.note %}
+                <p class="text-secondary fst-italic mb-0">Ghi chú: {{ order.note }}</p>
+                {% endif %}
+            </div>
         </div>
-        <a href="{{ url_for('admin.orders') }}" class="text-xs font-semibold text-slate-600 hover:text-slate-900 transition flex items-center gap-1">
-            <span>← Quay lại danh sách</span>
-        </a>
+
+        <!-- Bảng sản phẩm -->
+        <div class="card kpi-card overflow-hidden">
+            <div class="card-header bg-white">
+                <h2 class="h6 text-uppercase text-secondary fw-bold mb-0">Sản phẩm đã đặt</h2>
+            </div>
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Sách</th>
+                            <th class="text-center">Đơn giá</th>
+                            <th class="text-center">SL</th>
+                            <th class="text-end">Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in order.items %}
+                        <tr>
+                            <td class="fw-semibold">{{ item.book.title }}</td>
+                            <td class="text-center">{{ item.unit_price | vnd }}</td>
+                            <td class="text-center fw-bold">{{ item.quantity }}</td>
+                            <td class="text-end fw-bold">{{ item.subtotal | vnd }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" class="text-end text-secondary">Phí giao hàng</td>
+                            <td class="text-end fw-bold {% if order.shipping_fee == 0 %}text-success{% endif %}">
+                                {% if order.shipping_fee == 0 %}Miễn phí{% else %}{{ order.shipping_fee | vnd }}{% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" class="text-end fw-bold">Tổng cộng</td>
+                            <td class="text-end h5 text-primary mb-0">{{ order.total_amount | vnd }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div class="small text-secondary border-top p-3">
+                Đơn giá là giá tại thời điểm đặt hàng.
+            </div>
+        </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        <!-- Cột Trái: Thông tin khách hàng & Bảng sản phẩm (7 cols) -->
-        <div class="lg:col-span-7 space-y-6">
-            <!-- Khách hàng Card -->
-            <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs space-y-3">
-                <h3 class="text-xs uppercase font-bold text-slate-400 tracking-wider">Khách hàng</h3>
-                <div class="space-y-1 text-xs">
-                    <p class="text-sm font-bold text-slate-900">
-                        {{ order.customer_name }} <span class="font-normal text-slate-500">· {{ order.customer_phone }}</span>
-                    </p>
-                    <p class="text-slate-600">{{ order.shipping_address }}</p>
-                    {% if order.customer_email %}
-                    <p class="text-slate-500">{{ order.customer_email }}</p>
-                    {% endif %}
-                    <p class="text-slate-700 pt-2 border-t border-slate-100">
-                        Thanh toán: <strong class="font-semibold">{{ order.payment_method }}</strong>
-                    </p>
-                    {% if order.note %}
-                    <p class="text-slate-500 italic">Ghi chú: {{ order.note }}</p>
-                    {% endif %}
-                </div>
-            </div>
-
-            <!-- Bảng sản phẩm -->
-            <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
-                <div class="p-4 border-b border-slate-100">
-                    <h3 class="text-xs uppercase font-bold text-slate-400 tracking-wider">Sản phẩm đã đặt</h3>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs border-collapse">
-                        <thead>
-                            <tr class="bg-slate-50 text-slate-500 font-semibold uppercase border-b border-slate-200">
-                                <th class="py-3 px-4">Sách</th>
-                                <th class="py-3 px-4 text-center">Đơn giá</th>
-                                <th class="py-3 px-4 text-center">SL</th>
-                                <th class="py-3 px-4 text-right">Thành tiền</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100">
-                            {% for item in order.items %}
-                            <tr class="hover:bg-slate-50/50">
-                                <td class="py-3 px-4 font-semibold text-slate-800">{{ item.book.title }}</td>
-                                <td class="py-3 px-4 text-center text-slate-600">{{ item.unit_price | vnd }}</td>
-                                <td class="py-3 px-4 text-center font-bold text-slate-800">{{ item.quantity }}</td>
-                                <td class="py-3 px-4 text-right font-bold text-slate-900">{{ item.subtotal | vnd }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                        <tfoot class="bg-slate-50/80 border-t border-slate-200 text-xs">
-                            <tr>
-                                <td colspan="3" class="py-2 px-4 text-right text-slate-500">Phí giao hàng</td>
-                                <td class="py-2 px-4 text-right font-bold {% if order.shipping_fee == 0 %}text-emerald-600{% else %}text-slate-800{% endif %}">
-                                    {% if order.shipping_fee == 0 %}Miễn phí{% else %}{{ order.shipping_fee | vnd }}{% endif %}
-                                </td>
-                            </tr>
-                            <tr class="border-t border-slate-200">
-                                <td colspan="3" class="py-3 px-4 text-right text-slate-900 font-extrabold text-sm">Tổng cộng</td>
-                                <td class="py-3 px-4 text-right text-base font-black text-blue-700">{{ order.total_amount | vnd }}</td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-                <div class="p-3 bg-slate-50/50 text-[11px] text-slate-400 border-t border-slate-100">
-                    Đơn giá là giá tại thời điểm đặt (OrderItem.unit_price)
-                </div>
-            </div>
-        </div>
-
-        <!-- Cột Phải: Trạng thái & Lịch sử Timeline (5 cols) -->
-        <div class="lg:col-span-5 space-y-6">
-            <!-- Box Trạng thái -->
-            <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs space-y-4">
-                <div>
-                    <span class="text-xs uppercase font-bold text-slate-400 tracking-wider block mb-2">Trạng thái</span>
-                    <div class="text-sm font-semibold">
-                        {{ status_badge(order.status) }}
-                    </div>
+    <div class="col-lg-5">
+        <!-- Trạng thái & Lịch sử Card -->
+        <div class="card kpi-card mb-4">
+            <div class="card-body">
+                <!-- Trạng thái đơn hàng -->
+                <h2 class="h6 text-uppercase text-secondary fw-bold">Trạng thái</h2>
+                <div class="mb-3">
+                    {{ status_badge(order.status) }}
                 </div>
 
                 <!-- Form chuyển trạng thái (nếu chưa ở trạng thái cuối) -->
                 {% if not order.is_terminal_status() %}
-                <div class="pt-4 border-t border-slate-100 space-y-3">
-                    <form method="POST" action="{{ url_for('admin.order_update_status', id=order.id) }}" class="space-y-3">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <form method="POST" action="{{ url_for('admin.order_update_status', id=order.id) }}" class="border-top pt-3">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <label class="form-label small fw-semibold">Chuyển sang</label>
+                    <select name="new_status" class="form-select form-select-sm mb-2">
+                        {% for s, label in status_form.new_status.choices %}
+                        <option value="{{ s }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="text" name="note" class="form-control form-control-sm mb-3" placeholder="Ghi chú chuyển đổi (tuỳ chọn)...">
+                    <button type="submit" class="btn btn-brand btn-sm w-100">Cập nhật</button>
+                </form>
 
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Chuyển sang</label>
-                            <select name="new_status" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:bg-white focus:border-blue-600 transition">
-                                {% for s, label in status_form.new_status.choices %}
-                                <option value="{{ s }}">{{ label }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-
-                        <div>
-                            <input type="text" name="note" placeholder="Ghi chú chuyển đổi (tuỳ chọn)..." 
-                                   class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:bg-white focus:border-blue-600 transition">
-                        </div>
-
-                        <div class="flex items-center gap-2 pt-1">
-                            <button type="submit" 
-                                    class="flex-1 py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold text-xs rounded-xl shadow-xs transition">
-                                Cập nhật
-                            </button>
-                        </div>
-                    </form>
-
-                    <!-- Nút Huỷ đơn nhanh (có modal xác nhận & hoàn kho) -->
-                    <form method="POST" action="{{ url_for('admin.order_update_status', id=order.id) }}">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <input type="hidden" name="action_type" value="cancel">
-                        <button type="submit" 
-                                onclick="return confirm('Bạn có chắc chắn muốn huỷ đơn hàng #{{ order.id }}? Thao tác này sẽ tự động hoàn lại số lượng tồn kho cho các sách.')"
-                                class="w-full py-2 bg-white border border-rose-300 text-rose-600 hover:bg-rose-50 font-semibold text-xs rounded-xl shadow-xs transition">
-                            Huỷ đơn
-                        </button>
-                    </form>
-                </div>
+                <!-- Nút Huỷ đơn nhanh (có modal xác nhận & hoàn kho) -->
+                <form method="POST" action="{{ url_for('admin.order_update_status', id=order.id) }}" class="mt-2">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="action_type" value="cancel">
+                    <button type="submit" onclick="return confirm('Bạn có chắc chắn muốn huỷ đơn hàng #{{ order.id }}?')" class="btn btn-outline-danger btn-sm w-100">
+                        Huỷ đơn
+                    </button>
+                </form>
                 {% else %}
-                <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-[11px] text-slate-500 font-medium">
+                <div class="alert alert-light border small mb-0">
                     Đơn hàng đã ở trạng thái kết thúc ({{ order.status }}). Không thể chỉnh sửa hoặc chuyển đổi nữa.
                 </div>
                 {% endif %}
             </div>
+        </div>
 
-            <!-- Box Lịch sử trạng thái -->
-            <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs space-y-4">
-                <h3 class="text-xs uppercase font-bold text-slate-400 tracking-wider">Lịch sử</h3>
-                
-                <div class="space-y-4 relative before:absolute before:inset-0 before:left-2 before:w-0.5 before:bg-slate-200">
+        <!-- Box Lịch sử trạng thái -->
+        <div class="card kpi-card">
+            <div class="card-body">
+                <h2 class="h6 text-uppercase text-secondary fw-bold">Lịch sử</h2>
+                <div class="timeline">
                     {% for h in order.status_history %}
-                    <div class="relative flex items-start gap-3 pl-6">
-                        <!-- Dot -->
-                        <span class="absolute left-1 top-1.5 w-2.5 h-2.5 rounded-full bg-blue-600 ring-4 ring-white"></span>
-                        <div class="text-xs">
-                            <div class="flex items-center gap-2">
-                                <span class="font-bold text-slate-800">{{ h.status }}</span>
-                                <span class="text-[11px] text-slate-400 font-normal">{{ h.created_at.strftime('%d/%m %H:%M') }}</span>
-                            </div>
+                    <div class="timeline-item mb-3">
+                        <span class="timeline-dot"></span>
+                        <div class="small">
+                            <strong>{{ h.status }}</strong>
+                            <span class="text-secondary">{{ h.created_at.strftime('%d/%m %H:%M') }}</span>
                             {% if h.note %}
-                            <p class="text-slate-500 mt-0.5">{{ h.note }}</p>
+                            <div class="text-secondary">{{ h.note }}</div>
                             {% endif %}
                         </div>
                     </div>

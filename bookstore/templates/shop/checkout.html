@@ -4,110 +4,116 @@
 {% block title %}Thông tin khách hàng & Đặt hàng - Nhà sách Sông Hương{% endblock %}
 
 {% block content %}
-<div class="space-y-6">
-    <div class="border-b border-slate-200 pb-4">
-        <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Thông tin khách hàng</h1>
-        <p class="text-xs text-slate-500 mt-1">Vui lòng điền thông tin chính xác để Nhà sách Sông Hương giao hàng nhanh chóng.</p>
+<div class="page-section">
+    <div class="border-bottom pb-3 mb-4">
+        <h1 class="h3 fw-bold">Thông tin khách hàng</h1>
+        <p class="small text-secondary mb-0">Điền thông tin chính xác để giao hàng nhanh chóng.</p>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    <div class="row g-4 align-items-start">
         <!-- Left: Flask-WTF Checkout Form (7 cols) -->
-        <div class="lg:col-span-7 bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-xs">
-            <form method="POST" action="{{ url_for('shop.checkout') }}" novalidate class="space-y-4">
-                {{ form.hidden_tag() }}
+        <div class="col-lg-7">
+            <div class="app-card p-4 p-lg-5">
+                <form method="POST" action="{{ url_for('shop.checkout') }}" novalidate>
+                    {{ form.hidden_tag() }}
 
-                <!-- Họ tên -->
-                {{ render_field(form.customer_name, placeholder="Ví dụ: Nguyễn Văn An") }}
+                    <!-- Họ tên -->
+                    {{ render_field(form.customer_name, placeholder="Ví dụ: Nguyễn Văn An") }}
 
-                <!-- SĐT & Email in 2 cols -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {{ render_field(form.customer_phone, placeholder="09xxxxxxxx") }}
-                    {{ render_field(form.customer_email, placeholder="ban@example.com") }}
-                </div>
+                    <!-- SĐT & Email in 2 cols -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ render_field(form.customer_phone, placeholder="09xxxxxxxx") }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ render_field(form.customer_email, placeholder="ban@example.com") }}
+                        </div>
+                    </div>
 
-                <!-- Địa chỉ giao hàng -->
-                {{ render_field(form.shipping_address, placeholder="Số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành...") }}
+                    <!-- Địa chỉ giao hàng -->
+                    {{ render_field(form.shipping_address, placeholder="Số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành...") }}
 
-                <!-- Ghi chú -->
-                {{ render_field(form.note, placeholder="Ví dụ: Giao giờ hành chính, gọi trước khi đến...") }}
+                    <!-- Ghi chú -->
+                    {{ render_field(form.note, placeholder="Ví dụ: Giao giờ hành chính...") }}
 
-                <!-- Phương thức thanh toán -->
-                <div class="pt-2 border-t border-slate-100">
-                    <label class="block text-sm font-semibold text-slate-800 mb-2">
-                        Phương thức thanh toán *
-                    </label>
-                    {{ render_field(form.payment_method) }}
-                </div>
+                    <!-- Phương thức thanh toán -->
+                    <div class="border-top pt-3">
+                        <label class="form-label fw-semibold">
+                            Phương thức thanh toán *
+                        </label>
+                        {{ render_field(form.payment_method) }}
+                    </div>
 
-                <!-- Action Buttons -->
-                <div class="pt-6 border-t border-slate-100 flex flex-wrap items-center gap-4">
-                    <button type="submit" 
-                            class="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-sm rounded-xl shadow-md shadow-blue-500/20 transition duration-150 flex items-center justify-center gap-2">
-                        <span>Xác nhận đặt hàng</span>
-                    </button>
+                    <!-- Action Buttons -->
+                    <div class="d-flex flex-wrap align-items-center gap-3 border-top pt-4">
+                        <button type="submit" 
+                                class="btn btn-brand px-4">
+                            Xác nhận đặt hàng
+                        </button>
 
-                    <a href="{{ url_for('shop.view_cart') }}" 
-                       class="text-xs font-semibold text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5 py-2">
-                        <span>← Quay lại giỏ hàng</span>
-                    </a>
-                </div>
-            </form>
+                        <a href="{{ url_for('shop.view_cart') }}" 
+                           class="btn btn-link text-decoration-none text-secondary">
+                            ← Quay lại giỏ hàng
+                        </a>
+                    </div>
+                </form>
+            </div>
         </div>
 
         <!-- Right: Order Summary Box (5 cols) -->
-        <div class="lg:col-span-5 bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-xs sticky top-24">
-            <h2 class="text-base font-bold text-slate-900 pb-4 border-b border-slate-100 flex items-center justify-between">
-                <span>Đơn hàng của bạn</span>
-                <span class="text-xs font-semibold text-slate-500">{{ items|length }} đầu sách</span>
-            </h2>
+        <aside class="col-lg-5">
+            <div class="order-summary-card p-4 sticky-summary position-sticky">
+                <h2 class="h5 fw-bold d-flex justify-content-between pb-3 border-bottom">
+                    <span>Đơn hàng của bạn</span>
+                    <span class="small text-secondary">{{ items|length }} đầu sách</span>
+                </h2>
 
-            <!-- Items List -->
-            <div class="divide-y divide-slate-100 max-h-72 overflow-y-auto my-4 pr-1">
-                {% for item in items %}
-                <div class="py-3 flex items-center justify-between gap-3 text-sm">
-                    <div class="flex-1 pr-2">
-                        <span class="font-medium text-slate-800 line-clamp-1">{{ item.book.title }}</span>
-                        <span class="text-xs text-slate-400">× {{ item.quantity }}</span>
+                <!-- Items List -->
+                <div class="my-3" style="max-height:280px;overflow-y:auto">
+                    {% for item in items %}
+                    <div class="d-flex justify-content-between gap-3 py-2 border-bottom">
+                        <div>
+                            <div class="fw-semibold">{{ item.book.title }}</div>
+                            <div class="small text-secondary">× {{ item.quantity }}</div>
+                        </div>
+                        <strong class="text-nowrap small">
+                            {{ item.subtotal | vnd }}
+                        </strong>
                     </div>
-                    <span class="font-semibold text-slate-700 whitespace-nowrap">
-                        {{ item.subtotal | vnd }}
-                    </span>
-                </div>
-                {% endfor %}
-            </div>
-
-            <!-- Calculation Rows -->
-            <div class="space-y-2.5 pt-4 border-t border-slate-100 text-sm">
-                <!-- Tạm tính -->
-                <div class="flex items-center justify-between text-slate-600">
-                    <span>Tạm tính</span>
-                    <span class="font-semibold text-slate-800">{{ subtotal | vnd }}</span>
+                    {% endfor %}
                 </div>
 
-                <!-- Phí giao hàng -->
-                <div class="flex items-center justify-between text-slate-600">
-                    <div>
-                        <span>Phí giao hàng</span>
-                        <p class="text-[11px] text-emerald-600 font-medium">Miễn phí khi tạm tính từ 200.000 đ</p>
+                <!-- Calculation Rows -->
+                <div class="pt-3">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-secondary">Tạm tính</span>
+                        <strong>{{ subtotal | vnd }}</strong>
                     </div>
-                    <span class="font-semibold {% if shipping_fee == 0 %}text-emerald-600{% else %}text-slate-800{% endif %}">
-                        {% if shipping_fee == 0 %}
-                            Miễn phí
-                        {% else %}
-                            {{ shipping_fee | vnd }}
-                        {% endif %}
-                    </span>
-                </div>
 
-                <!-- Tổng thanh toán -->
-                <div class="pt-4 border-t border-slate-200 flex items-baseline justify-between">
-                    <span class="text-base font-bold text-slate-900">Tổng thanh toán</span>
-                    <span class="text-2xl font-black text-blue-700 tracking-tight">
-                        {{ total_amount | vnd }}
-                    </span>
+                    <div class="d-flex justify-content-between mb-3">
+                        <div>
+                            <span class="text-secondary">Phí giao hàng</span>
+                            <div class="small text-success">Miễn phí từ 200.000 đ</div>
+                        </div>
+                        <strong class="{% if shipping_fee == 0 %}text-success{% endif %}">
+                            {% if shipping_fee == 0 %}
+                                Miễn phí
+                            {% else %}
+                                {{ shipping_fee | vnd }}
+                            {% endif %}
+                        </strong>
+                    </div>
+
+                    <!-- Tổng thanh toán -->
+                    <div class="d-flex justify-content-between align-items-center border-top pt-3">
+                        <strong>Tổng thanh toán</strong>
+                        <strong class="h4 text-primary mb-0">
+                            {{ total_amount | vnd }}
+                        </strong>
+                    </div>
                 </div>
             </div>
-        </div>
+        </aside>
     </div>
 </div>
 {% endblock %}

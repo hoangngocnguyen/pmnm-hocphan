@@ -3,19 +3,19 @@
 {% block title %}Không tìm thấy trang (404){% endblock %}
 
 {% block content %}
-<div class="min-h-[50vh] flex flex-col items-center justify-center text-center px-4">
-    <div class="w-20 h-20 bg-rose-50 text-rose-500 rounded-3xl flex items-center justify-center text-3xl mb-6 shadow-xs border border-rose-100">
+<div class="error-page d-flex flex-column align-items-center justify-content-center text-center px-3">
+    <div class="empty-icon rounded-4 bg-danger-subtle text-danger fs-2 mb-4" style="width:80px;height:80px">
         🔍
     </div>
-    <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight mb-2">404 - Không tìm thấy trang</h1>
-    <p class="text-sm text-slate-500 max-w-md mb-8">
-        Trang bạn đang tìm kiếm không tồn tại hoặc đã được di chuyển sang địa chỉ khác.
+    <h1 class="h2 fw-bold">404 - Không tìm thấy trang</h1>
+    <p class="text-secondary mb-4">
+        Trang bạn đang tìm kiếm không tồn tại hoặc đã được di chuyển.
     </p>
-    <div class="flex items-center gap-3">
-        <a href="{{ url_for('shop.index') }}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl shadow-sm transition">
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('shop.index') }}" class="btn btn-brand">
             Về trang chủ
         </a>
-        <a href="javascript:history.back()" class="px-5 py-2.5 bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 text-sm font-semibold rounded-xl transition">
+        <a href="javascript:history.back()" class="btn btn-light border">
             Quay lại
         </a>
     </div>

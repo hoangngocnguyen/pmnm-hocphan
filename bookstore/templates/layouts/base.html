@@ -1,160 +1,61 @@
 {% from "macros/components.html" import flash_alerts %}
 <!doctype html>
-<html lang="vi" class="h-full bg-slate-50">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>
-      {% block title %}Nhà sách Sông Hương{% endblock %} - Mua sách trực tuyến
-    </title>
-
-    <!-- Google Fonts Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-    <!-- Tailwind CSS Play CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ["Inter", "sans-serif"],
-            },
-            colors: {
-              brand: {
-                50: "#eff6ff",
-                100: "#dbeafe",
-                500: "#3b82f6",
-                600: "#2563eb",
-                700: "#1d4ed8",
-                800: "#1e40af",
-                900: "#1e3a8a",
-              },
-            },
-          },
-        },
-      };
-    </script>
-    <style>
-      body {
-        font-family: "Inter", sans-serif;
-      }
-    </style>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Nhà sách Sông Hương{% endblock %} - Mua sách trực tuyến</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     {% block extra_head %}{% endblock %}
-  </head>
-  <body
-    class="flex flex-col min-h-full text-slate-800 antialiased selection:bg-blue-500 selection:text-white"
-  >
-    <!-- Header / Navbar -->
-    <header
-      class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200/80 shadow-xs"
-    >
-      <div
-        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4"
-      >
-        <!-- Brand Logo -->
-        <a
-          href="{{ url_for('shop.index') }}"
-          class="flex items-center gap-2.5 group"
-        >
-          <div
-            class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-700 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition duration-200"
-          >
-            <span class="text-xl">📖</span>
-          </div>
-          <div>
-            <span class="text-lg font-bold text-slate-900 tracking-tight block"
-              >Nhà sách Sông Hương</span
-            >
-          </div>
-        </a>
+</head>
+<body class="site-shell">
+    <header class="site-navbar sticky-top">
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <div class="container-fluid px-lg-5">
+                <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url_for('shop.index') }}">
+                    <span class="brand-mark text-white">📖</span>
+                    <span class="brand-name">Nhà sách Sông Hương</span>
+                </a>
 
-        <!-- Navigation Links -->
-        <nav class="flex items-center gap-1 sm:gap-4">
-          <a
-            href="{{ url_for('shop.index') }}"
-            class="px-3.5 py-2 rounded-lg text-sm font-semibold transition {% if request.endpoint == 'shop.index' or request.endpoint == 'shop.book_detail' %}text-blue-700 bg-blue-50{% else %}text-slate-600 hover:text-slate-900 hover:bg-slate-100{% endif %}"
-          >
-            Sách
-          </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
-          <!-- Cart Button with Orange Badge -->
-          <a
-            href="{{ url_for('shop.view_cart') }}"
-            class="relative inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-semibold transition {% if request.endpoint == 'shop.view_cart' or request.endpoint == 'shop.checkout' %}text-blue-700 bg-blue-50 ring-1 ring-blue-200{% else %}text-slate-700 hover:text-blue-600 hover:bg-slate-100{% endif %}"
-          >
-            <span class="text-lg">🛒</span>
-            <span class="hidden sm:inline">Giỏ hàng</span>
-
-            <!-- Orange Badge -->
-            <span
-              id="cart-badge"
-              class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-xs font-bold text-white bg-amber-500 rounded-full shadow-xs"
-            >
-              {{ total_cart_items }}
-            </span>
-          </a>
-
-          <!-- Admin Link -->
-          <a
-            href="{{ url_for('admin.dashboard') }}"
-            class="ml-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:text-slate-900 hover:bg-slate-100 border border-slate-200 transition"
-            title="Trang quản trị"
-          >
-            <svg
-              class="w-3.5 h-3.5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-              ></path>
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-              ></path>
-            </svg>
-            Quản trị
-          </a>
+                <div class="collapse navbar-collapse" id="mainNavbar">
+                    <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+                        <li class="nav-item">
+                            <a class="nav-link px-3 {% if request.endpoint in ['shop.index', 'shop.book_detail'] %}active fw-semibold{% endif %}" href="{{ url_for('shop.index') }}">Sách</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link px-3 cart-link {% if request.endpoint in ['shop.view_cart', 'shop.checkout'] %}active fw-semibold{% endif %}" href="{{ url_for('shop.view_cart') }}">
+                                🛒 <span class="d-none d-sm-inline">Giỏ hàng</span>
+                                <span id="cart-badge" class="badge rounded-pill text-bg-warning cart-badge">{{ total_cart_items }}</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-outline-secondary btn-sm ms-lg-2" href="{{ url_for('admin.dashboard') }}" title="Trang quản trị">⚙ Quản trị</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </nav>
-      </div>
     </header>
 
-    <!-- Flash Messages -->
     {{ flash_alerts() }}
 
-    <!-- Main Content -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {% block content %}{% endblock %}
+    <main class="shop-main container-fluid px-3 px-lg-5 py-4">
+        {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-white border-t border-slate-200 mt-auto py-8">
-      <div
-        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500"
-      >
-        <span>&copy; 2026 Bản quyền thuộc về Nhà sách Sông Hương.</span>
-        <div>
-          <span
-            >Phát triển bởi
-            <strong class="text-slate-700 font-semibold"
-              >Nguyễn Ngọc Huy Hoàng</strong
-            ></span
-          >
+    <footer class="site-footer py-4 mt-auto">
+        <div class="container-fluid px-lg-5 d-flex flex-column flex-sm-row align-items-center justify-content-between gap-3 text-secondary text-xs">
+            <span>&copy; 2026 Bản quyền thuộc về Nhà sách Sông Hương.</span>
+            <span>Phát triển bởi <strong class="text-dark">Nguyễn Ngọc Huy Hoàng</strong></span>
         </div>
-      </div>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     {% block extra_scripts %}{% endblock %}
-  </body>
+</body>
 </html>

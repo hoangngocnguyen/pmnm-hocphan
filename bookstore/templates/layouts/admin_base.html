@@ -1,152 +1,51 @@
 {% from "macros/components.html" import flash_alerts %}
 <!doctype html>
-<html lang="vi" class="h-full bg-slate-100">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Quản trị{% endblock %} - Nhà sách Sông Hương</title>
-
-    <!-- Google Fonts Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-
-    <!-- Tailwind CSS Play CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js CDN for Revenue Graph -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ["Inter", "sans-serif"],
-            },
-          },
-        },
-      };
-    </script>
-    <style>
-      body {
-        font-family: "Inter", sans-serif;
-      }
-    </style>
     {% block extra_head %}{% endblock %}
-  </head>
-  <body class="flex h-full text-slate-800 antialiased overflow-hidden">
-    <!-- Sidebar -->
-    <aside
-      class="w-64 bg-slate-900 text-slate-300 flex flex-col flex-shrink-0 border-r border-slate-800 select-none"
-    >
-      <!-- Sidebar Brand -->
-      <div class="p-5 border-b border-slate-800/80">
-        <span
-          class="text-xs uppercase tracking-wider font-semibold text-slate-400 block mb-0.5"
-          >Quản trị</span
-        >
-        <div class="flex items-center gap-2">
-          <h1 class="text-base font-bold text-white tracking-tight">
-            Nhà sách Sông Hương
-          </h1>
+</head>
+<body class="admin-body">
+    <div class="d-flex">
+        <aside class="admin-sidebar d-flex flex-column flex-shrink-0 p-3" id="adminSidebar">
+            <div class="border-bottom border-secondary-subtle px-2 py-3 mb-3">
+                <div class="text-uppercase small text-secondary">Quản trị</div>
+                <h1 class="h6 text-white mb-0 fw-bold">Nhà sách Sông Hương</h1>
+            </div>
+            <nav class="nav nav-pills flex-column flex-grow-1">
+                <a class="nav-link {% if request.endpoint == 'admin.dashboard' %}active{% endif %}" href="{{ url_for('admin.dashboard') }}">Tổng quan</a>
+                <a class="nav-link {% if request.endpoint in ['admin.books', 'admin.book_new', 'admin.book_edit'] %}active{% endif %}" href="{{ url_for('admin.books') }}">Sách</a>
+                <a class="nav-link {% if request.endpoint in ['admin.categories', 'admin.category_edit'] %}active{% endif %}" href="{{ url_for('admin.categories') }}">Danh mục</a>
+                <a class="nav-link d-flex justify-content-between {% if request.endpoint in ['admin.orders', 'admin.order_detail'] %}active{% endif %}" href="{{ url_for('admin.orders') }}">
+                    <span>Đơn hàng</span>
+                    {% if pending_orders_count and pending_orders_count > 0 %}<span class="badge text-bg-warning">{{ pending_orders_count }}</span>{% endif %}
+                </a>
+            </nav>
+            <div class="admin-sidebar-footer pt-3">
+                <a class="nav-link text-white" href="{{ url_for('shop.index') }}">← Trang bán hàng</a>
+            </div>
+        </aside>
+
+        <div class="admin-main flex-grow-1 overflow-hidden">
+            <header class="admin-topbar px-3 px-lg-4 d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-light d-lg-none" type="button" onclick="document.getElementById('adminSidebar').classList.toggle('show')">☰</button>
+                    {% block breadcrumb %}<h2 class="h5 mb-0 fw-bold">{% block header_title %}Bảng điều khiển{% endblock %}</h2>{% endblock %}
+                </div>
+            </header>
+            {{ flash_alerts() }}
+            <main class="admin-content p-3 p-lg-4">
+                {% block content %}{% endblock %}
+            </main>
         </div>
-      </div>
-
-      <!-- Sidebar Navigation -->
-      <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-        <!-- Tổng quan -->
-        <a
-          href="{{ url_for('admin.dashboard') }}"
-          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition {% if request.endpoint == 'admin.dashboard' %}bg-blue-600 text-white shadow-sm font-semibold{% else %}text-slate-300 hover:bg-slate-800/70 hover:text-white{% endif %}"
-        >
-          <span>Tổng quan</span>
-        </a>
-
-        <!-- Sách -->
-        <a
-          href="{{ url_for('admin.books') }}"
-          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition {% if request.endpoint in ['admin.books', 'admin.book_new', 'admin.book_edit'] %}bg-blue-600 text-white shadow-sm font-semibold{% else %}text-slate-300 hover:bg-slate-800/70 hover:text-white{% endif %}"
-        >
-          <span>Sách</span>
-        </a>
-
-        <!-- Danh mục -->
-        <a
-          href="{{ url_for('admin.categories') }}"
-          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition {% if request.endpoint in ['admin.categories', 'admin.category_edit'] %}bg-blue-600 text-white shadow-sm font-semibold{% else %}text-slate-300 hover:bg-slate-800/70 hover:text-white{% endif %}"
-        >
-          <span>Danh mục</span>
-        </a>
-
-        <!-- Đơn hàng with Orange Badge -->
-        <a
-          href="{{ url_for('admin.orders') }}"
-          class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition {% if request.endpoint in ['admin.orders', 'admin.order_detail'] %}bg-blue-600 text-white shadow-sm font-semibold{% else %}text-slate-300 hover:bg-slate-800/70 hover:text-white{% endif %}"
-        >
-          <div class="flex items-center gap-3">
-            <span>Đơn hàng</span>
-          </div>
-          {% if pending_orders_count and pending_orders_count > 0 %}
-          <span
-            class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-xs font-bold text-white bg-amber-500 rounded-full shadow-xs"
-          >
-            {{ pending_orders_count }}
-          </span>
-          {% endif %}
-        </a>
-      </nav>
-
-      <!-- Sidebar Footer -->
-      <div class="p-3 border-t border-slate-800/80">
-        <a
-          href="{{ url_for('shop.index') }}"
-          class="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800 transition"
-        >
-          <svg
-            class="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M10 19l-7-7m0 0l7-7m-7 7h18"
-            ></path>
-          </svg>
-          <span>Trang bán hàng</span>
-        </a>
-      </div>
-    </aside>
-
-    <!-- Main Content Area -->
-    <div class="flex-1 flex flex-col overflow-hidden bg-slate-50">
-      <!-- Topbar -->
-      <header
-        class="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between flex-shrink-0"
-      >
-        <div class="flex items-center gap-3">
-          {% block breadcrumb %}
-          <h2 class="text-lg font-bold text-slate-900">
-            {% block header_title %}Bảng điều khiển{% endblock %}
-          </h2>
-          {% endblock %}
-        </div>
-      </header>
-
-      <!-- Alerts -->
-      {{ flash_alerts() }}
-
-      <!-- Content Body (Scrollable) -->
-      <main class="flex-1 overflow-y-auto p-6">
-        {% block content %}{% endblock %}
-      </main>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     {% block extra_scripts %}{% endblock %}
-  </body>
+</body>
 </html>
